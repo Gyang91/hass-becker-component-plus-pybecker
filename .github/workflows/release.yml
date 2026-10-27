@@ -30,11 +30,11 @@ jobs:
       # again to tag the release. A merge made with GITHUB_TOKEN starts no new
       # workflow run, so tagging has to happen in this one. HACS installs the
       # integration straight from the tag, so no release asset is needed.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: ${{ steps.release.outputs.pr }}
         with:
           ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: ${{ steps.release.outputs.pr }}
         with:
           python-version: "3.14"
