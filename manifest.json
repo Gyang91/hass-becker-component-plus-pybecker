@@ -15,5 +15,5 @@
   "requirements": [
     "pyserial==3.5"
   ],
-  "version": "0.7.1"
+  "version": "1.0.0"
 }

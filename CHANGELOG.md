@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v0.7.1...v1.0.0) (2026-10-27)
+
+
+### Bug Fixes
+
+* **cover:** cancel a pending partial-move stop when a new movement starts ([4363e75](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/4363e75fe7f9bb4987d9c9edd41e9fd706ac8592))
+* declare file_upload dependency and platform-only config schema ([bab1019](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/bab1019d27faa31614a9e69e4dfc71554ca28cc8))
+* **pybecker:** bound the receive buffer to a possible partial frame ([61e04f8](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/61e04f87b3f05e0dffbba61d5618498d1e31b7a1))
+* **pybecker:** persist rolling-code counter before queueing packets ([f71db00](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/f71db00c7c66da3a3fa2c8d199a6da23262691c5))
+* release the stick when setup fails and report real unit ids ([a39af0a](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/a39af0a011a5724d65de2ef955496bc588b13a57))
+
+
+### Continuous Integration
+
+* automate releases with release-please and add Dependabot ([f2866bf](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/f2866bf8246048686f50509d4acc4f9ce0b51f6d))
+
 ## 0.6.1
 
 A connectivity visibility and availability refresh release.
