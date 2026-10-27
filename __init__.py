@@ -10,6 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_DEVICE, CONF_FILENAME
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryError, ConfigEntryNotReady, HomeAssistantError, ServiceValidationError
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.dispatcher import dispatcher_send
@@ -40,6 +41,9 @@ from .pybecker.becker_helper import BeckerConnectionError
 from .pybecker.database import FILE_PATH, SQL_DB_FILE
 
 _LOGGER = logging.getLogger(__name__)
+
+# YAML is only accepted as a `cover:` platform (imported into a config entry).
+CONFIG_SCHEMA = cv.platform_only_config_schema(DOMAIN)
 
 REPAIR_CONNECTION = "connection_unavailable"
 REPAIR_DATABASE = "database_path_invalid"
