@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: googleapis/release-please-action@v5
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      # Release without a manual merge: when release-please opened or updated
+      # its pull request, test that branch, merge it, and run release-please
+      # again to tag the release. A merge made with GITHUB_TOKEN starts no new
+      # workflow run, so tagging has to happen in this one. HACS installs the
+      # integration straight from the tag, so no release asset is needed.
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.pr }}
+        with:
+          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+      - uses: actions/setup-python@v5
+        if: ${{ steps.release.outputs.pr }}
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: requirements_test.txt
+      - name: Test the release branch
+        if: ${{ steps.release.outputs.pr }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements_test.txt
+          python -m compileall -q .
+          pytest -c tests/pytest.ini tests
+      - name: Merge the release pull request
+        if: ${{ steps.release.outputs.pr }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr merge "${{ fromJSON(steps.release.outputs.pr).number }}" --squash --repo "${{ github.repository }}"
+      - uses: googleapis/release-please-action@v5
+        if: ${{ steps.release.outputs.pr }}
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
