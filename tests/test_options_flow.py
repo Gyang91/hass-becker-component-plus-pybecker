@@ -369,6 +369,9 @@ async def test_import_db_uses_offline_swap_when_entry_not_loaded(
     result = await hass.config_entries.options.async_configure(
         form["flow_id"], {"upload": str(uuid4())}
     )
+    # Let the reload scheduled by the import finish before teardown, or its
+    # delayed config-entry save can linger as a timer and fail the test.
+    await hass.async_block_till_done()
 
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "import_done"
