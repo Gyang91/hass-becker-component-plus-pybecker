@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write # approve the release pull request's checks
   contents: write
   pull-requests: write
 
@@ -47,6 +48,20 @@ jobs:
           pip install -r requirements_test.txt
           python -m compileall -q .
           pytest -c tests/pytest.ini tests
+      # Checks on a pull request opened by github-actions[bot] can wait for
+      # approval and expire as failed once it is merged: approve them.
+      - name: Approve the release pull request's checks
+        if: ${{ steps.release.outputs.pr }}
+        # env is evaluated even when the step is skipped: pass the raw output
+        # and parse it in the script (fromJSON('') would fail every run).
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ steps.release.outputs.pr }}
+        run: |
+          BRANCH=$(jq -r .headBranchName <<<"$PR")
+          for id in $(gh api "repos/${{ github.repository }}/actions/runs?branch=$BRANCH&status=action_required" --jq '.workflow_runs[].id'); do
+            gh api -X POST "repos/${{ github.repository }}/actions/runs/$id/approve" || echo "Could not approve run $id"
+          done
       - name: Merge the release pull request
         if: ${{ steps.release.outputs.pr }}
         env:
