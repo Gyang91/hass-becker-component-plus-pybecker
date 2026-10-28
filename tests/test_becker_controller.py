@@ -90,12 +90,14 @@ async def test_command_helpers_delegate(method: str, command: str) -> None:
         ("UP", becker_module.COMMAND_UP),
         ("UP2", becker_module.COMMAND_UP5),
         ("HALT", becker_module.COMMAND_HALT),
-        ("RELEASE", becker_module.COMMAND_RELEASE),
         ("DOWN", becker_module.COMMAND_DOWN),
         ("DOWN2", becker_module.COMMAND_DOWN5),
     ],
 )
-async def test_run_codes_simple_commands(command: str, constant: int) -> None:
+async def test_run_codes_button_commands_are_released(
+    command: str, constant: int
+) -> None:
+    """Each button press is followed by RELEASE, like a physical remote."""
     controller = _controller()
     controller.write = AsyncMock()
     unit = ["1737b", 10, 1]
@@ -106,9 +108,28 @@ async def test_run_codes_simple_commands(command: str, constant: int) -> None:
     ):
         await controller.run_codes(2, unit, command, False)
 
-    controller.write.assert_awaited_once_with([f"2:10:{constant}"])
-    assert unit[1] == 11
+    controller.write.assert_awaited_once_with(
+        [f"2:10:{constant}", f"2:11:{becker_module.COMMAND_RELEASE}"]
+    )
+    assert unit[1] == 12
     controller.db.set_unit.assert_called_once_with(unit, False)
+
+
+async def test_run_codes_release_command_is_not_released_again() -> None:
+    controller = _controller()
+    controller.write = AsyncMock()
+    unit = ["1737b", 10, 1]
+
+    with patch(
+        "custom_components.becker.pybecker.becker.generate_code",
+        side_effect=lambda channel, current_unit, cmd: f"{channel}:{current_unit[1]}:{cmd}",
+    ):
+        await controller.run_codes(2, unit, "RELEASE", False)
+
+    controller.write.assert_awaited_once_with(
+        [f"2:10:{becker_module.COMMAND_RELEASE}"]
+    )
+    assert unit[1] == 11
 
 
 async def test_run_codes_ignores_unconfigured_unit_except_pairing() -> None:
