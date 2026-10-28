@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.2...v1.0.3) (2026-10-28)
+
+
+### Bug Fixes
+
+* **pybecker:** send RELEASE after each button command ([227ff6c](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/227ff6cea4d3dab9a93e658888fb2182232b4ca8))
+
 ## [1.0.2](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.1...v1.0.2) (2026-10-28)
 
 
