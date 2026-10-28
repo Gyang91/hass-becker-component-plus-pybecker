@@ -4,11 +4,9 @@ from homeassistant.components.button import ButtonEntity
 from homeassistant.const import CONF_FRIENDLY_NAME, EntityCategory
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo, async_get_device_id_by_identifier
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
-
-from . import availability_signal_for_entry
 
 from .const import CONF_CHANNEL, DOMAIN, MANUFACTURER, SUBENTRY_TYPE_COVER
+from .entity import BeckerStickEntity
 from .pybecker.becker_helper import BeckerConnectionError
 
 PARALLEL_UPDATES = 1
@@ -33,17 +31,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
         )
 
 
-class BeckerPairButton(ButtonEntity):
+class BeckerPairButton(BeckerStickEntity, ButtonEntity):
     """Button that teaches a shutter receiver this stick's channel."""
 
-    _attr_has_entity_name = True
     _attr_translation_key = "pair"
     _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, becker, entry_id, channel, name, parent_device_id=None):
         """Init the pair button."""
-        self._becker = becker
-        self._entry_id = entry_id
+        super().__init__(becker, entry_id)
         self._channel = channel
         self._attr_unique_id = f"{channel}_pair"
         # Share the cover's device so the button shows up on the cover. The
@@ -57,25 +53,6 @@ class BeckerPairButton(ButtonEntity):
         if parent_device_id is not None:
             device_info["via_device_id"] = parent_device_id
         self._attr_device_info = device_info
-
-    async def async_added_to_hass(self) -> None:
-        """Subscribe to communicator availability changes."""
-        self.async_on_remove(
-            async_dispatcher_connect(
-                self.hass,
-                availability_signal_for_entry(self._entry_id),
-                self._handle_availability,
-            )
-        )
-
-    def _handle_availability(self) -> None:
-        """Refresh state after a communicator availability change."""
-        self.schedule_update_ha_state()
-
-    @property
-    def available(self):
-        """Return whether the Becker communicator is currently available."""
-        return self._becker.communicator.is_available()
 
     async def async_press(self):
         """Send the pairing (TRAIN) signal on the cover's channel."""

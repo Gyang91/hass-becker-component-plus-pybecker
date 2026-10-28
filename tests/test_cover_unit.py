@@ -50,7 +50,6 @@ def _entity(
         channel="1",
         entry_id="entry-1",
         signal="packet",
-        availability_signal="availability",
         state_template=template,
         remote_id=remote_id,
         travel_time_down=travel_time_down,
@@ -399,7 +398,6 @@ def test_create_entity_defaults_name_and_tilt_intermediate() -> None:
         becker,
         "entry-1",
         "packet",
-        "availability",
         {CONF_CHANNEL: "2"},
     )
 
@@ -417,7 +415,6 @@ def test_create_entity_disables_tilt_intermediate_when_intermediate_disabled(
         MagicMock(),
         "entry-1",
         "packet",
-        "availability",
         {
             CONF_CHANNEL: "1",
             CONF_FRIENDLY_NAME: "Kitchen",
@@ -439,7 +436,6 @@ def test_create_entity_prefers_blind_when_both_tilt_modes_enabled(
         MagicMock(),
         "entry-1",
         "packet",
-        "availability",
         {
             CONF_CHANNEL: "1",
             CONF_FRIENDLY_NAME: "Kitchen",
@@ -464,7 +460,6 @@ def test_create_entity_warns_when_template_and_travel_time_are_combined(
         MagicMock(),
         "entry-1",
         "packet",
-        "availability",
         {
             CONF_CHANNEL: "1",
             CONF_VALUE_TEMPLATE: "{{ 50 }}",

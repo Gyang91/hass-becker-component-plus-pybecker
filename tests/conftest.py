@@ -32,6 +32,7 @@ COPIED = [
     "cover.py",
     "db_transfer.py",
     "diagnostics.py",
+    "entity.py",
     "event.py",
     "http.py",
     "travelcalculator.py",
