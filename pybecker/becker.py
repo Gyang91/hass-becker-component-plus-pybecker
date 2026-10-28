@@ -32,6 +32,11 @@ COMMAND_CLEARPOS2 = 0x91
 COMMAND_CLEARPOS3 = 0x92
 COMMAND_CLEARPOS4 = 0x93
 
+# Button commands a Centronic remote follows with a RELEASE packet when the
+# button is let go. Without it, receivers can treat UP as still held and
+# ignore a following HALT until the end position is reached.
+RELEASED_BUTTON_COMMANDS = frozenset({"UP", "UP2", "DOWN", "DOWN2", "HALT"})
+
 # DEFAULT_DEVICE_NAME moved to becker_helper
 
 _LOGGER = logging.getLogger(__name__)
@@ -183,9 +188,10 @@ class Becker:
 
         unit[1] += 1
 
-        # append the release button code
-        #codes.append(generate_code(channel, unit, 0))
-        #unit[1] += 1
+        # Let go of the button, as a physical remote does.
+        if cmd in RELEASED_BUTTON_COMMANDS:
+            codes.append(generate_code(channel, unit, COMMAND_RELEASE))
+            unit[1] += 1
 
         # Persist the counter before queueing: once a code may reach the
         # motor, its rolling-code value must never be reused, even if
