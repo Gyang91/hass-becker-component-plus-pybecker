@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.1...v1.0.2) (2026-10-28)
+
+
+### Documentation
+
+* credit only the original authors in README ([89deefc](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/89deefc945fc45d1a05e5419182db69c8b4c3c1d))
+
 ## [1.0.1](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.0...v1.0.1) (2026-10-28)
 
 
