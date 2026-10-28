@@ -32,7 +32,7 @@ Supported Centronic USB stick order numbers include **4035 200 041 0** and **403
 
 > **Important:** Becker uses rolling codes. Keep a current backup of the integration state before migrating Home Assistant or restoring a database. The integration rejects imports that would move known rolling-code state backwards.
 
-The project builds on the original work by [ole](https://github.com/ole1986), [Nicolas Berthel](https://github.com/nicolasberthel), [Rainer Staude](https://github.com/RainerStaude/hass-becker-component-plus-pybecker), [holsteiner-kiel](https://github.com/holsteiner-kiel/hass-becker-component-plus-pybecker) and later contributors. Version 1.0.0 is the first release of this repository.
+The project builds on the original work by [ole](https://github.com/ole1986), [Nicolas Berthel](https://github.com/nicolasberthel), [Rainer Staude](https://github.com/RainerStaude/hass-becker-component-plus-pybecker) and later contributors. Version 1.0.0 is the first release of this repository.
 
 The bundled `pybecker/` code is based on Nicolas Berthel's **pybecker 1.1.0** and is maintained as an embedded fork for this Home Assistant integration. The original Centronic RF frame generation and rolling-code format are retained, while this fork adds Home Assistant-specific reliability improvements such as asynchronous command handling, serialized database access, reconnect and retry behavior, runtime availability reporting, diagnostics, and safe state import/export.
 
