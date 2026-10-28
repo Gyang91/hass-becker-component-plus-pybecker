@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.3...v1.0.4) (2026-10-28)
+
+
+### Code Refactoring
+
+* share availability handling in a BeckerStickEntity base class ([dc742b6](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/dc742b657892a8daf9a5b54a80fc15430fae7ded))
+
 ## [1.0.3](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.2...v1.0.3) (2026-10-28)
 
 
