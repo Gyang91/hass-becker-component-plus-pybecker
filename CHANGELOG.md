@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.0...v1.0.1) (2026-10-28)
+
+
+### Documentation
+
+* fix README badges, add HACS install button and credits ([ad0b299](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/ad0b299eb8432a46447033dd15009dce5c47dce3))
+
 ## [1.0.0](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v0.7.1...v1.0.0) (2026-10-27)
 
 
