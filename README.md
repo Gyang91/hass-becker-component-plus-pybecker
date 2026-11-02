@@ -4,7 +4,7 @@
 
 [![Release](https://img.shields.io/github/v/release/Gyang91/hass-becker-component-plus-pybecker?color=blue)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/releases/latest)
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories/)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.1%2B-41BDF5?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.11%2B-41BDF5?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
 [![CI](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/ci.yml/badge.svg)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/ci.yml)
 [![Validate](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/validate.yml/badge.svg)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/validate.yml)
 [![License](https://img.shields.io/github/license/Gyang91/hass-becker-component-plus-pybecker)](LICENSE)
