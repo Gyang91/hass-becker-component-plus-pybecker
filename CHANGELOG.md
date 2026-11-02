@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.4...v1.0.5) (2026-11-02)
+
+
+### Bug Fixes
+
+* rely on Home Assistant's pyserial and require 2026.11 ([39a6fc9](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/39a6fc9f0e11a1c5c07dad0224e6e26b5a58e2ae))
+
 ## [1.0.4](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.3...v1.0.4) (2026-10-28)
 
 
