@@ -14,6 +14,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.dispatcher import dispatcher_send
+from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import ConfigType
 
 from .const import (
@@ -119,6 +120,35 @@ LOG_UNITS_SCHEMA = vol.Schema(
         vol.Optional(CONF_ENTRY_ID): str,
     }
 )
+
+
+def _channel_store(hass: HomeAssistant, entry_id: str) -> Store:
+    """Return the store remembering every channel a stick's covers used."""
+    return Store(hass, 1, f"{DOMAIN}.{entry_id}.channels")
+
+
+async def async_known_channels(hass: HomeAssistant, entry_id: str) -> list[str]:
+    """Return every channel this stick has had a cover on, also removed ones.
+
+    A removed cover's motor stays paired to its channel until it is unpaired
+    on the motor itself, so these channels are not really free.
+    """
+    data = await _channel_store(hass, entry_id).async_load() or {}
+    return list(data.get("channels", []))
+
+
+async def _async_remember_channels(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Add the channels of the current covers to the remembered ones."""
+    known = set(await async_known_channels(hass, entry.entry_id))
+    current = {
+        subentry.data[CONF_CHANNEL]
+        for subentry in entry.subentries.values()
+        if subentry.subentry_type == SUBENTRY_TYPE_COVER
+    }
+    if not current <= known:
+        await _channel_store(hass, entry.entry_id).async_save(
+            {"channels": sorted(known | current)}
+        )
 
 
 def signal_for_entry(entry_id: str) -> str:
@@ -347,6 +377,8 @@ async def _async_finish_setup(
     )
     _remove_stale_cover_devices(hass, entry)
 
+    await _async_remember_channels(hass, entry)
+
     entry.async_on_unload(entry.add_update_listener(_update_listener))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -357,6 +389,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: BeckerConfigEntry) -> b
         # Stops the communicator thread (blocking join) and closes the db
         await hass.async_add_executor_job(entry.runtime_data.close)
     return unload_ok
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: BeckerConfigEntry) -> None:
+    """Forget the remembered channels when the stick's entry is deleted."""
+    await _channel_store(hass, entry.entry_id).async_remove()
 
 
 async def _update_listener(hass: HomeAssistant, entry: BeckerConfigEntry) -> None:

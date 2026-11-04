@@ -49,7 +49,7 @@ from homeassistant.helpers.selector import (
 )
 from homeassistant.util import dt as dt_util
 
-from . import signal_for_entry
+from . import async_known_channels, signal_for_entry
 from .event import decode_event_type
 from .const import (
     BACKUP_PREFIX,
@@ -582,6 +582,7 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
     def __init__(self) -> None:
         """Init the cover subentry flow."""
         self._cover_input: dict[str, Any] = {}
+        self._reuse_confirmed: tuple[int, int] | None = None
         self._learn_task: asyncio.Task[tuple[str, list[str]] | None] | None = None
         self._learned_remote = ""
         self._heard_buttons: list[str] = []
@@ -591,32 +592,36 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
     ) -> SubentryFlowResult:
         """Add a new cover."""
         errors: dict[str, str] = {}
+        current = [
+            subentry.data[CONF_CHANNEL]
+            for subentry in self._get_entry().subentries.values()
+            if subentry.subentry_type == SUBENTRY_TYPE_COVER
+        ]
+        known = await async_known_channels(self.hass, self._get_entry().entry_id)
+        current_keys = {_channel_key(channel) for channel in current}
+        removed_keys = {_channel_key(channel) for channel in known} - current_keys
 
         if user_input is not None:
             errors = _validate_cover_input(user_input, require_channel=True)
             channel = user_input[CONF_CHANNEL]
             if not errors:
                 key = _channel_key(channel)
-                for subentry in self._get_entry().subentries.values():
-                    if (
-                        subentry.subentry_type == SUBENTRY_TYPE_COVER
-                        and _channel_key(subentry.data[CONF_CHANNEL]) == key
-                    ):
-                        errors[CONF_CHANNEL] = "already_configured"
-                        break
+                if key in current_keys:
+                    errors[CONF_CHANNEL] = "already_configured"
+                elif key in removed_keys and self._reuse_confirmed != key:
+                    # A removed cover's motor may still listen on this channel.
+                    # Warn once; submitting the same channel again keeps it.
+                    self._reuse_confirmed = key
+                    errors[CONF_CHANNEL] = "channel_used_before"
             if not errors:
                 self._cover_input = user_input
                 return await self.async_step_pair()
 
         suggested = user_input
         if suggested is None:
-            free = _next_free_channel(
-                [
-                    subentry.data[CONF_CHANNEL]
-                    for subentry in self._get_entry().subentries.values()
-                    if subentry.subentry_type == SUBENTRY_TYPE_COVER
-                ]
-            )
+            # Prefer channels no cover ever used; only fall back to channels
+            # of removed covers when the stick has no unused channel left.
+            free = _next_free_channel(current + known) or _next_free_channel(current)
             suggested = {CONF_CHANNEL: free} if free else None
         return self.async_show_form(
             step_id="user",

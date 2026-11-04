@@ -98,7 +98,7 @@
             "tilt_time_blind": "Blind tilt time"
           },
           "data_description": {
-            "channel": "Already filled in with a free channel of the USB stick. Keep it for a new cover. Only change it if this cover was already paired with this stick on another channel (1-7, or unit:channel such as 2:1).",
+            "channel": "Already filled in with a channel of the USB stick that no cover has used yet. Keep it for a new cover. Only change it if this cover was already paired with this stick on another channel (1-7, or unit:channel such as 2:1).",
             "value_template": "Optional template that reports the cover position from another entity.",
             "remote_id": "Optional hand-held remote IDs to follow, formatted as ID:channel (for example 12345:2). Separate multiple remotes with commas.",
             "travelling_time_down": "Seconds the cover needs to travel from open to closed. Enables position control.",
@@ -175,7 +175,8 @@
         "invalid_channel": "Channel must be 1-7 or unit:channel (for example 2:1).",
         "invalid_remote_id": "Remote ID must be formatted as ID:channel (for example 12345:2).",
         "already_configured": "A cover on this channel is already configured. A channel without a unit uses unit 1, so 1 and 1:1 are the same channel.",
-        "not_loaded": "The Centronic stick is not connected, so no remote can be heard. Untick \"Learn a remote now\" or try again when the stick is connected."
+        "not_loaded": "The Centronic stick is not connected, so no remote can be heard. Untick \"Learn a remote now\" or try again when the stick is connected.",
+        "channel_used_before": "A cover you removed used this channel. If its motor wasn't unpaired, it will move together with the new cover. Keep the suggested channel, or submit again to use this one anyway (for example to re-add the same cover)."
       },
       "abort": {
         "reconfigure_successful": "Cover updated."

@@ -98,7 +98,7 @@
             "tilt_time_blind": "Jalousie-Neigezeit"
           },
           "data_description": {
-            "channel": "Bereits mit einem freien Kanal des USB-Sticks ausgefüllt. Für eine neue Abdeckung so lassen. Nur ändern, wenn diese Abdeckung schon auf einem anderen Kanal mit diesem Stick angelernt wurde (1-7 oder Einheit:Kanal wie 2:1).",
+            "channel": "Bereits mit einem Kanal des USB-Sticks ausgefüllt, den noch keine Abdeckung benutzt hat. Für eine neue Abdeckung so lassen. Nur ändern, wenn diese Abdeckung schon auf einem anderen Kanal mit diesem Stick angelernt wurde (1-7 oder Einheit:Kanal wie 2:1).",
             "value_template": "Optionales Template, das die Position der Abdeckung aus einer anderen Entität liefert.",
             "remote_id": "Optionale IDs physischer Fernbedienungen im Format ID:Kanal (zum Beispiel 12345:2). Mehrere Fernbedienungen mit Kommas trennen.",
             "travelling_time_down": "Sekunden für die Fahrt von offen nach geschlossen. Aktiviert die Positionssteuerung.",
@@ -175,7 +175,8 @@
         "invalid_channel": "Der Kanal muss 1-7 oder Einheit:Kanal sein (zum Beispiel 2:1).",
         "invalid_remote_id": "Die Fernbedienungs-ID muss das Format ID:Kanal haben (zum Beispiel 12345:2).",
         "already_configured": "Eine Abdeckung auf diesem Kanal ist bereits eingerichtet. Ein Kanal ohne Unit nutzt Unit 1, daher sind 1 und 1:1 derselbe Kanal.",
-        "not_loaded": "Der Centronic-Stick ist nicht verbunden, daher kann keine Fernbedienung empfangen werden. Entferne den Haken bei \"Fernbedienung jetzt anlernen\" oder versuche es erneut, wenn der Stick verbunden ist."
+        "not_loaded": "Der Centronic-Stick ist nicht verbunden, daher kann keine Fernbedienung empfangen werden. Entferne den Haken bei \"Fernbedienung jetzt anlernen\" oder versuche es erneut, wenn der Stick verbunden ist.",
+        "channel_used_before": "Eine entfernte Abdeckung hat diesen Kanal benutzt. Wenn ihr Motor nicht abgelernt wurde, fährt er zusammen mit der neuen Abdeckung. Behalte den vorgeschlagenen Kanal oder sende erneut ab, um diesen trotzdem zu nutzen (zum Beispiel, um dieselbe Abdeckung wieder hinzuzufügen)."
       },
       "abort": {
         "reconfigure_successful": "Abdeckung aktualisiert."
