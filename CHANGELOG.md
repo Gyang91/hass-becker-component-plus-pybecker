@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.5...v1.0.6) (2026-11-04)
+
+
+### Bug Fixes
+
+* let the update listener reload after reconfigure ([f7c2d84](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/f7c2d844b0c751a4bcc7e077f6d02a65fec3f95d))
+
 ## [1.0.5](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.4...v1.0.5) (2026-11-02)
 
 
