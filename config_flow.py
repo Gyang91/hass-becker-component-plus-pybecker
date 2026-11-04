@@ -156,6 +156,16 @@ def _validate_cover_input(
     return errors
 
 
+def _channel_key(channel: str) -> tuple[int, int]:
+    """Return (unit, channel) for a channel string.
+
+    A bare channel uses sender unit 1, so "1" and "1:1" address the same
+    receiver, as pybecker sends them.
+    """
+    unit, _, number = channel.rpartition(":")
+    return int(unit or 1), int(number)
+
+
 def _import_cover_data(slug: str, cover_config: dict[str, Any]) -> dict[str, Any]:
     """Map a validated YAML cover config onto subentry data."""
     data: dict[str, Any] = {CONF_CHANNEL: cover_config[CONF_CHANNEL]}
@@ -498,8 +508,12 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
             errors = _validate_cover_input(user_input, require_channel=True)
             channel = user_input[CONF_CHANNEL]
             if not errors:
+                key = _channel_key(channel)
                 for subentry in self._get_entry().subentries.values():
-                    if subentry.unique_id == channel:
+                    if (
+                        subentry.subentry_type == SUBENTRY_TYPE_COVER
+                        and _channel_key(subentry.data[CONF_CHANNEL]) == key
+                    ):
                         errors[CONF_CHANNEL] = "already_configured"
                         break
             if not errors:
