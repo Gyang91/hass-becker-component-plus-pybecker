@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.2.1...v1.2.2) (2026-11-04)
+
+
+### Bug Fixes
+
+* say which channel the remote-learning screens mean ([cd8976d](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/cd8976da2909455c511b75631dc62030160137f4))
+
 ## [1.2.1](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.2.0...v1.2.1) (2026-11-04)
 
 
