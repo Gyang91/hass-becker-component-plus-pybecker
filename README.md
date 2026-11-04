@@ -26,6 +26,8 @@ Supported Centronic USB stick order numbers include **4035 200 041 0** and **403
 - Open, close, stop, position and tilt/intermediate controls
 - Position tracking by travel time, template or physical remote commands
 - Remote button presses exposed as Home Assistant event entities
+- Link a physical remote to a cover by pressing STOP twice ([Learn a remote](#learn-a-remote))
+- Open and close always available in the dashboard, because the position is an estimate
 - Rolling-code-safe JSON and SQLite backup/import tools
 - Automatic reconnect after transient USB or network failures
 - Serialized database access and RF command handling
@@ -145,6 +147,7 @@ Learning only listens: the integration sends nothing while it waits. If no remot
 - Pairing still requires the target Becker receiver to be placed into its learn/pairing mode.
 - Network connections require a transparent serial-to-TCP bridge; the integration does not configure or manage that bridge.
 - Legacy YAML configuration is supported for migration but is deprecated in favor of UI configuration.
+- Two Centronic sticks in one Home Assistant can't both have a cover on the same channel: the second cover is not created. Use different channels or units on the second stick.
 
 ## Removal
 
@@ -326,8 +329,9 @@ Usually there is at least one remote, the master remote, used to control the cov
 The remote communicates directly with the cover. It is possible to receive and track 
 all remote commands within home assistant. Therefore the position of the cover
 is updated whenever a remote command is received.  
-In order to determine the remote ID, it es necessary to enable debug log messages
-(see troubleshooting). The debug message will look as follows:  
+The easiest way to link a remote is [Learn a remote](#learn-a-remote) in the
+cover's **Reconfigure** screen. For YAML, or to look the ID up yourself, enable
+debug log messages (see troubleshooting). The debug message will look as follows:  
 `... DEBUG ... \[custom_components.becker.pybecker.becker_helper]` Received packet: 
 unit_id: `12345`, channel: `2`, command: HALT, argument: 0, packet: ...
 ```yaml
@@ -469,6 +473,7 @@ The software is able to "emulate" up to 5 remote controls, named "units".
 For these units 1-5, the stick is configured internally to use unit numbers 1737b, 1737c, 1737d, 1737e and 1737f.
 You can also see these unit id's in the database.
 If you leave out the unit number, the unit number 1 will be used, so the USB stick uses 1737b as a unit id.
+This means `1` and `1:1` are the same channel. Home Assistant won't let you add a second cover on a channel that is already used, in either spelling.
 I think that's all the magic behind the Becker protocol.
 
 # Troubleshooting
@@ -495,8 +500,9 @@ data:
 ```
 
 All messages are logged to the home-assistant.log file in your config folder.  
-It is also helpful to find out the Remote ID of your Becker Remote. The message 
-will be something like below every time you press a key on your Remote:  
+It also shows the Remote ID of your Becker Remote (to link a remote to a cover,
+[Learn a remote](#learn-a-remote) is easier). The message will be something like
+below every time you press a key on your Remote:  
 `... DEBUG ... \[custom_components.becker.pybecker.becker_helper]` Received packet: 
 unit_id: `12345`, channel: `2`, command: HALT, argument: 0, packet: ...
 
