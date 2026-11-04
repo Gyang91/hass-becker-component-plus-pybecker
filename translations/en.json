@@ -118,13 +118,15 @@
             "intermediate_position_down": "Intermediate position down",
             "tilt_intermediate": "Tilt moves to intermediate position",
             "tilt_blind": "Tilt as venetian blind",
-            "tilt_time_blind": "Blind tilt time"
+            "tilt_time_blind": "Blind tilt time",
+            "learn_remote": "Learn a remote now"
           },
           "data_description": {
             "value_template": "Optional template that reports the cover position from another entity.",
             "remote_id": "Optional hand-held remote IDs to follow, formatted as ID:channel (for example 12345:2). Separate multiple remotes with commas.",
             "travelling_time_down": "Seconds the cover needs to travel from open to closed. Enables position control.",
-            "travelling_time_up": "Seconds the cover needs to travel from closed to open. Enables position control."
+            "travelling_time_up": "Seconds the cover needs to travel from closed to open. Enables position control.",
+            "learn_remote": "After you submit, the integration listens for 30 seconds. Press STOP on the Becker remote this cover should follow. STOP avoids moving the cover."
           }
         },
         "pair": {
@@ -133,15 +135,31 @@
           "data": {
             "pair": "Send pairing signal now"
           }
+        },
+        "learn_remote_confirm": {
+          "title": "Remote found",
+          "description": "Heard remote {remote_id}. Submit to add it to this cover. Presses on that remote will then update the cover's position."
+        },
+        "learn_remote_failed": {
+          "title": "No remote heard",
+          "description": "No remote was heard within {seconds} seconds. Make sure the remote is in range of the Centronic stick and press STOP again.",
+          "menu_options": {
+            "learn_remote": "Listen again",
+            "save_without_remote": "Save settings without a remote"
+          }
         }
       },
       "error": {
         "invalid_channel": "Channel must be 1-7 or unit:channel (for example 2:1).",
         "invalid_remote_id": "Remote ID must be formatted as ID:channel (for example 12345:2).",
-        "already_configured": "A cover on this channel is already configured. A channel without a unit uses unit 1, so 1 and 1:1 are the same channel."
+        "already_configured": "A cover on this channel is already configured. A channel without a unit uses unit 1, so 1 and 1:1 are the same channel.",
+        "not_loaded": "The Centronic stick is not connected, so no remote can be heard. Untick \"Learn a remote now\" or try again when the stick is connected."
       },
       "abort": {
         "reconfigure_successful": "Cover updated."
+      },
+      "progress": {
+        "learn_remote": "Press STOP on the Becker remote this cover should follow. Waiting up to {seconds} seconds…"
       }
     }
   },

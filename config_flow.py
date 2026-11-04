@@ -1,5 +1,6 @@
 """Config flow for the Becker integration."""
 
+import asyncio
 import logging
 import os
 import shutil
@@ -30,6 +31,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import DOMAIN as HOMEASSISTANT_DOMAIN
 from homeassistant.core import callback
+from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.issue_registry import IssueSeverity, async_create_issue
 from homeassistant.helpers.selector import (
     BooleanSelector,
@@ -46,6 +48,7 @@ from homeassistant.helpers.selector import (
 )
 from homeassistant.util import dt as dt_util
 
+from . import signal_for_entry
 from .const import (
     BACKUP_PREFIX,
     CHANNEL_PATTERN,
@@ -58,6 +61,7 @@ from .const import (
     CONF_INTERMEDIATE_POSITION,
     CONF_INTERMEDIATE_POSITION_DOWN,
     CONF_INTERMEDIATE_POSITION_UP,
+    CONF_LEARN_REMOTE,
     CONF_PAIR,
     CONF_QUEUE_SIZE,
     CONF_REMOTE_ID,
@@ -80,6 +84,7 @@ from .const import (
     DOWNLOAD_LINK_TTL_MINUTES,
     DOWNLOAD_URL,
     INTERMEDIATE_POSITION,
+    LEARN_REMOTE_TIMEOUT,
     REMOTE_ID,
     SUBENTRY_TYPE_COVER,
     TILT_TIME,
@@ -133,6 +138,10 @@ COVER_ADD_SCHEMA = vol.Schema(
     {vol.Required(CONF_CHANNEL): TextSelector()}
 ).extend(COVER_OPTIONS_SCHEMA.schema)
 
+COVER_RECONFIGURE_SCHEMA = COVER_OPTIONS_SCHEMA.extend(
+    {vol.Optional(CONF_LEARN_REMOTE, default=False): BooleanSelector()}
+)
+
 PAIR_SCHEMA = vol.Schema(
     {vol.Required(CONF_PAIR, default=True): BooleanSelector()}
 )
@@ -154,6 +163,14 @@ def _validate_cover_input(
     if remote_id and not REMOTE_ID.search(remote_id.upper()):
         errors[CONF_REMOTE_ID] = "invalid_remote_id"
     return errors
+
+
+def _add_remote_id(remote_ids: str | None, remote_id: str) -> str:
+    """Append a remote id to a comma separated list, skipping duplicates."""
+    known = [part.strip() for part in (remote_ids or "").split(",") if part.strip()]
+    if remote_id.upper() in (part.upper() for part in known):
+        return ", ".join(known)
+    return ", ".join([*known, remote_id])
 
 
 def _channel_key(channel: str) -> tuple[int, int]:
@@ -497,6 +514,8 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
     def __init__(self) -> None:
         """Init the cover subentry flow."""
         self._cover_input: dict[str, Any] = {}
+        self._learn_task: asyncio.Task[str | None] | None = None
+        self._learned_remote = ""
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -559,26 +578,121 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
         errors: dict[str, str] = {}
 
         if user_input is not None:
-            errors = _validate_cover_input(user_input, require_channel=False)
+            settings = dict(user_input)
+            learn_remote = settings.pop(CONF_LEARN_REMOTE, False)
+            errors = _validate_cover_input(settings, require_channel=False)
+            if (
+                not errors
+                and learn_remote
+                and self._get_entry().state is not ConfigEntryState.LOADED
+            ):
+                errors["base"] = "not_loaded"
             if not errors:
-                return self.async_update_and_abort(
-                    self._get_entry(),
-                    subentry,
-                    title=user_input.get(CONF_FRIENDLY_NAME) or subentry.title,
-                    data_updates={
-                        **user_input,
-                        CONF_CHANNEL: subentry.data[CONF_CHANNEL],
-                    },
-                )
+                if learn_remote:
+                    self._cover_input = settings
+                    return await self.async_step_learn_remote()
+                return self._async_save_reconfigure(settings)
 
         return self.async_show_form(
             step_id="reconfigure",
             data_schema=self.add_suggested_values_to_schema(
-                COVER_OPTIONS_SCHEMA, user_input or subentry.data
+                COVER_RECONFIGURE_SCHEMA, user_input or subentry.data
             ),
             description_placeholders={CONF_CHANNEL: subentry.data[CONF_CHANNEL]},
             errors=errors,
         )
+
+    @callback
+    def _async_save_reconfigure(self, settings: dict[str, Any]) -> SubentryFlowResult:
+        """Store the reconfigured cover settings and finish the flow."""
+        subentry = self._get_reconfigure_subentry()
+        return self.async_update_and_abort(
+            self._get_entry(),
+            subentry,
+            title=settings.get(CONF_FRIENDLY_NAME) or subentry.title,
+            data_updates={**settings, CONF_CHANNEL: subentry.data[CONF_CHANNEL]},
+        )
+
+    async def async_step_learn_remote(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Listen for a button press on a physical Becker remote.
+
+        Only listens: nothing is sent, so no cover moves because of this step.
+        """
+        if self._learn_task is None:
+            self._learn_task = self.hass.async_create_task(
+                self._async_wait_for_remote()
+            )
+        if not self._learn_task.done():
+            return self.async_show_progress(
+                step_id="learn_remote",
+                progress_action="learn_remote",
+                progress_task=self._learn_task,
+                description_placeholders={"seconds": str(LEARN_REMOTE_TIMEOUT)},
+            )
+        remote_id = self._learn_task.result()
+        self._learn_task = None
+        if remote_id is None:
+            return self.async_show_progress_done(next_step_id="learn_remote_failed")
+        self._learned_remote = remote_id
+        return self.async_show_progress_done(next_step_id="learn_remote_confirm")
+
+    async def _async_wait_for_remote(self) -> str | None:
+        """Return the id (unit:channel) of the first remote heard, or None."""
+        heard: asyncio.Future[str] = self.hass.loop.create_future()
+
+        @callback
+        def _packet_received(packet) -> None:
+            if heard.done():
+                return
+            channel = packet.group("channel").decode().upper()
+            # "F" is the all-channels button of a multi-channel remote;
+            # wait for a press on the cover's own channel instead.
+            if channel == "F":
+                return
+            heard.set_result(f"{packet.group('unit_id').decode().upper()}:{channel}")
+
+        unsubscribe = async_dispatcher_connect(
+            self.hass, signal_for_entry(self._get_entry().entry_id), _packet_received
+        )
+        try:
+            async with asyncio.timeout(LEARN_REMOTE_TIMEOUT):
+                return await heard
+        except TimeoutError:
+            return None
+        finally:
+            unsubscribe()
+
+    async def async_step_learn_remote_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Add the remote that was heard to the cover."""
+        if user_input is not None:
+            self._cover_input[CONF_REMOTE_ID] = _add_remote_id(
+                self._cover_input.get(CONF_REMOTE_ID), self._learned_remote
+            )
+            return self._async_save_reconfigure(self._cover_input)
+        return self.async_show_form(
+            step_id="learn_remote_confirm",
+            description_placeholders={CONF_REMOTE_ID: self._learned_remote},
+        )
+
+    async def async_step_learn_remote_failed(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Offer to listen again or save the other settings without a remote."""
+        return self.async_show_menu(
+            step_id="learn_remote_failed",
+            menu_options=["learn_remote", "save_without_remote"],
+            description_placeholders={"seconds": str(LEARN_REMOTE_TIMEOUT)},
+        )
+
+    async def async_step_save_without_remote(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Save the other settings without learning a remote."""
+        return self._async_save_reconfigure(self._cover_input)
 
 
 @asynccontextmanager

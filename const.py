@@ -38,6 +38,9 @@ CONF_PAIR = "pair"
 CONF_ENTRY_ID = "entry_id"
 CONF_UPLOAD = "upload"
 CONF_STATE_TEXT = "state_text"
+CONF_LEARN_REMOTE = "learn_remote"
+# Seconds the cover reconfigure flow listens for a remote button press
+LEARN_REMOTE_TIMEOUT = 30
 
 # Import/export
 DOWNLOAD_URL = "/api/becker/download/{entry_id}/{fmt}"
