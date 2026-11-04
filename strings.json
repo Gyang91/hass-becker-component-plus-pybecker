@@ -98,7 +98,7 @@
             "tilt_time_blind": "Blind tilt time"
           },
           "data_description": {
-            "channel": "The USB stick's channel for this cover (not the channel on your hand-held remote): 1-7, or unit:channel (for example 2:1) when using a sender unit other than 1. New cover: pick a free one and pair. Already paired with this stick: use the channel it was paired on.",
+            "channel": "Already filled in with a free channel of the USB stick. Keep it for a new cover. Only change it if this cover was already paired with this stick on another channel (1-7, or unit:channel such as 2:1).",
             "value_template": "Optional template that reports the cover position from another entity.",
             "remote_id": "Optional hand-held remote IDs to follow, formatted as ID:channel (for example 12345:2). Separate multiple remotes with commas.",
             "travelling_time_down": "Seconds the cover needs to travel from open to closed. Enables position control.",
@@ -126,7 +126,7 @@
             "remote_id": "Optional hand-held remote IDs to follow, formatted as ID:channel (for example 12345:2). Separate multiple remotes with commas.",
             "travelling_time_down": "Seconds the cover needs to travel from open to closed. Enables position control.",
             "travelling_time_up": "Seconds the cover needs to travel from closed to open. Enables position control.",
-            "learn_remote": "After you submit, press STOP ■ twice on the Becker remote this cover should follow. STOP doesn't start the cover moving."
+            "learn_remote": "After you submit, take the Becker remote you use for this cover and press STOP ■ twice. STOP doesn't start the cover moving."
           }
         },
         "pair": {
@@ -138,7 +138,7 @@
         },
         "learn_remote_confirm": {
           "title": "Is this your remote?",
-          "description": "Heard **{buttons}** from one remote (ID {remote_id}, remote channel {remote_channel}).\n\nIf these are the buttons you just pressed, link it. If not (for example someone else pressed a remote at the same time), listen again.",
+          "description": "Heard **{buttons}** from one remote.\n\nIf these are the buttons you just pressed, link it. If not (for example someone else used a remote at the same time), listen again.",
           "menu_options": {
             "learn_remote_link": "Link this remote",
             "learn_remote": "Listen again",
@@ -147,7 +147,7 @@
         },
         "learn_remote_failed": {
           "title": "No remote heard",
-          "description": "No remote was pressed twice within {seconds} seconds. Check that the remote is in range of the Centronic stick. On a remote with several channels, select the channel that moves this cover, not the one that moves all covers. Then press STOP ■ twice, about 2 seconds apart.",
+          "description": "No remote was pressed twice within {seconds} seconds. Check that the remote is in range of the Centronic stick and switched to this cover (not to all covers at once), then press STOP ■ twice, about 2 seconds apart.",
           "menu_options": {
             "learn_remote": "Listen again",
             "save_without_remote": "Save settings without a remote"
@@ -155,7 +155,7 @@
         },
         "learn_remote_confirm_linked": {
           "title": "Is this your remote?",
-          "description": "Heard **{buttons}** from one remote (ID {remote_id}, remote channel {remote_channel}).\n\nIf these are the buttons you just pressed, link it. If not (for example someone else pressed a remote at the same time), listen again.\n\n**Note:** this remote is already linked to **{covers}**. That's fine if one remote channel controls several covers. If you expected a different remote, listen again.",
+          "description": "Heard **{buttons}** from one remote.\n\nIf these are the buttons you just pressed, link it. If not (for example someone else used a remote at the same time), listen again.\n\n**Note:** this remote is already linked to **{covers}**. That's fine if it controls several covers. If you expected a different remote, listen again.",
           "menu_options": {
             "learn_remote_link": "Link this remote",
             "learn_remote": "Listen again",
@@ -164,7 +164,7 @@
         },
         "learn_remote_known": {
           "title": "Remote already linked",
-          "description": "Heard **{buttons}** from remote {remote_id}, remote channel {remote_channel}. This remote is already linked to this cover, so there is nothing to add.",
+          "description": "Heard **{buttons}**. This remote is already linked to this cover, so there is nothing to add.",
           "menu_options": {
             "save_without_remote": "Save settings",
             "learn_remote": "Listen for another remote"
@@ -181,7 +181,7 @@
         "reconfigure_successful": "Cover updated."
       },
       "progress": {
-        "learn_remote": "Press **STOP ■ twice** on the Becker remote, about 2 seconds apart.\n\nSTOP is the button with the square symbol ■. On most Becker hand-held remotes it sits between ▲ and ▼. STOP doesn't start the cover moving.\n\n**Remote with several channels?** First select the channel you normally use on that remote to move this cover: the one where ▲ moves this cover. This is the remote's own channel and has nothing to do with the Channel number you entered in Home Assistant. Don't use the setting that moves all covers at once; it is ignored.\n\nNo STOP button? Press ▲ twice instead, about 2 seconds apart. The cover will move.\n\nListening for up to {seconds} seconds…"
+        "learn_remote": "Take the Becker remote you use for this cover and press **STOP ■ twice**, about 2 seconds apart, just as you would to stop this cover.\n\nIf that remote controls several covers, switch it to this cover first, the way you normally do.\n\nSTOP is the button with the square symbol ■. On most Becker hand-held remotes it sits between ▲ and ▼. STOP doesn't start the cover moving.\n\nNo STOP button? Press ▲ twice instead, about 2 seconds apart. The cover will move.\n\nListening for up to {seconds} seconds…"
       }
     }
   },
