@@ -699,3 +699,41 @@ def test_swap_live_db_restores_backup_when_reopen_fails(tmp_path: Path) -> None:
     assert db_path.read_bytes() == b"old-db"
     assert becker.db is restored_db
 
+
+
+@pytest.mark.usefixtures("mock_becker", "mock_test_connection")
+async def test_reconfigure_loaded_entry_reloads_once(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Reconfiguring a loaded entry reloads it once, through its update listener.
+
+    Home Assistant 2026.11 warns when a flow reloads an entry that also has an
+    update listener (both reload it), and plans to stop supporting that.
+    """
+    await setup_integration(hass, mock_config_entry)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={
+            "source": SOURCE_RECONFIGURE,
+            "entry_id": mock_config_entry.entry_id,
+        },
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {"next_step_id": "reconfigure_serial"}
+    )
+    with patch(
+        "custom_components.becker.async_setup_entry", return_value=None
+    ) as setup_entry:
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {CONF_DEVICE: "/dev/ttyUSB9", CONF_FILENAME: "new.db"}
+        )
+        await hass.async_block_till_done()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    assert mock_config_entry.data[CONF_DEVICE] == "/dev/ttyUSB9"
+    assert setup_entry.call_count == 1
+    assert "update listener" not in caplog.text
