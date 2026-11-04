@@ -118,13 +118,15 @@
             "intermediate_position_down": "Zwischenposition abwärts",
             "tilt_intermediate": "Neigen fährt Zwischenposition an",
             "tilt_blind": "Neigen als Jalousie",
-            "tilt_time_blind": "Jalousie-Neigezeit"
+            "tilt_time_blind": "Jalousie-Neigezeit",
+            "learn_remote": "Fernbedienung jetzt anlernen"
           },
           "data_description": {
             "value_template": "Optionales Template, das die Position der Abdeckung aus einer anderen Entität liefert.",
             "remote_id": "Optionale IDs physischer Fernbedienungen im Format ID:Kanal (zum Beispiel 12345:2). Mehrere Fernbedienungen mit Kommas trennen.",
             "travelling_time_down": "Sekunden für die Fahrt von offen nach geschlossen. Aktiviert die Positionssteuerung.",
-            "travelling_time_up": "Sekunden für die Fahrt von geschlossen nach offen. Aktiviert die Positionssteuerung."
+            "travelling_time_up": "Sekunden für die Fahrt von geschlossen nach offen. Aktiviert die Positionssteuerung.",
+            "learn_remote": "Nach dem Absenden wartet die Integration 30 Sekunden. Drücke STOPP auf der Becker-Fernbedienung, der diese Abdeckung folgen soll. STOPP bewegt die Abdeckung nicht."
           }
         },
         "pair": {
@@ -133,15 +135,31 @@
           "data": {
             "pair": "Kopplungssignal jetzt senden"
           }
+        },
+        "learn_remote_confirm": {
+          "title": "Fernbedienung gefunden",
+          "description": "Fernbedienung {remote_id} empfangen. Absenden, um sie zu dieser Abdeckung hinzuzufügen. Tastendrücke auf dieser Fernbedienung aktualisieren dann die Position der Abdeckung."
+        },
+        "learn_remote_failed": {
+          "title": "Keine Fernbedienung empfangen",
+          "description": "Innerhalb von {seconds} Sekunden wurde keine Fernbedienung empfangen. Prüfe, ob die Fernbedienung in Reichweite des Centronic-Sticks ist, und drücke erneut STOPP.",
+          "menu_options": {
+            "learn_remote": "Erneut lauschen",
+            "save_without_remote": "Einstellungen ohne Fernbedienung speichern"
+          }
         }
       },
       "error": {
         "invalid_channel": "Der Kanal muss 1-7 oder Einheit:Kanal sein (zum Beispiel 2:1).",
         "invalid_remote_id": "Die Fernbedienungs-ID muss das Format ID:Kanal haben (zum Beispiel 12345:2).",
-        "already_configured": "Eine Abdeckung auf diesem Kanal ist bereits eingerichtet. Ein Kanal ohne Unit nutzt Unit 1, daher sind 1 und 1:1 derselbe Kanal."
+        "already_configured": "Eine Abdeckung auf diesem Kanal ist bereits eingerichtet. Ein Kanal ohne Unit nutzt Unit 1, daher sind 1 und 1:1 derselbe Kanal.",
+        "not_loaded": "Der Centronic-Stick ist nicht verbunden, daher kann keine Fernbedienung empfangen werden. Entferne den Haken bei \"Fernbedienung jetzt anlernen\" oder versuche es erneut, wenn der Stick verbunden ist."
       },
       "abort": {
         "reconfigure_successful": "Abdeckung aktualisiert."
+      },
+      "progress": {
+        "learn_remote": "Drücke STOPP auf der Becker-Fernbedienung, der diese Abdeckung folgen soll. Warte bis zu {seconds} Sekunden…"
       }
     }
   },

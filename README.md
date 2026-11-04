@@ -112,7 +112,18 @@ automation:
           entity_id: light.hallway
 ```
 
-Use the **Remote** event entity or debug logging to determine the remote ID and channel for your installation.
+To find a remote's ID and channel, use **Learn a remote** (below), the **Remote** event entity or debug logging.
+
+## Learn a remote
+
+Physical Becker remotes talk to the cover directly, so Home Assistant only knows the cover moved if it hears that remote. To link a remote to a cover:
+
+1. Open **Settings → Devices & services → Becker**, find the cover and choose **Reconfigure**.
+2. Tick **Learn a remote now** and submit.
+3. Within 30 seconds, press **STOP** on the remote. STOP doesn't move the cover.
+4. Confirm the remote that was heard. It is added to the cover's remote IDs, and presses on that remote then update the cover's position in Home Assistant.
+
+Learning only listens: the integration sends nothing while it waits. If no remote is heard, you can listen again or save your other changes without a remote. The all-channels button of a multi-channel remote is ignored, so press a button on the cover's own channel.
 
 ## Known limitations
 
