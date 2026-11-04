@@ -166,13 +166,14 @@ Since version 0.4.0 the integration is set up in the Home Assistant UI:
    - **Network (serial-to-TCP bridge)**: enter host and port of your bridge (for example ser2net, default port 5000).
 3. Add your covers to the created entry with **Add cover**. Each cover can be
    reconfigured later (name, travel times, tilt, remote IDs, position template)
-   without removing it.
+   without removing it. See [Cover settings: how-to guides](#cover-settings-how-to-guides)
+   for what each setting does.
 4. While adding a cover you can pair it straight away: put the shutter receiver
    into learn mode, then leave **Send pairing signal now** enabled. You can also
    pair (or re-pair) any time later with the **Pair** button on the cover's
    device page - no need for the `becker.pair` service.
 
-An existing YAML configuration (see below) is imported automatically on the
+An existing YAML configuration (see [Legacy YAML reference](#legacy-yaml-reference-deprecated)) is imported automatically on the
 next restart. After the import, remove the `becker` cover platform from your
 `configuration.yaml` - a repair issue will remind you. YAML configuration is
 deprecated and will be removed in a future release.
@@ -231,222 +232,76 @@ Open **Settings → Devices & Services → Becker → Configure**:
 > Since version 0.4.6, potentially blocking RF queue writes are offloaded from
 > Home Assistant's asyncio event loop while preserving command order.
 
-## Basic configuration (YAML, deprecated)
-```yaml
-cover:
-  - platform: becker
-    covers:
-      # Use unique names for each cover like kitchen, bedroom or living_room
-      kitchen:
-        friendly_name: "Kitchen Cover"
-        # Becker Centronic USB stick provides up to five units (1-5) with up to seven (1-7) channels
-        # Unit 1 - Channel 1
-        channel: "1"
-      bedroom:
-        friendly_name: "Bedroom Cover"
-        # Unit 1 - Channel 2
-        channel: "2"
-      living_room:
-        friendly_name: "Living room Cover"
-        # Use Unit 2 - Channel 1
-        channel: "2:1"
-```
-Note: The channel needs to be a string!
+## Cover settings: how-to guides
 
-## Platform configuration
-If you use the Becker integration with the ***Home Assistant Operating System***, 
-the default device path for the USB Stick should work. The default path is:  
-`/dev/serial/by-id/usb-BECKER-ANTRIEBE_GmbH_CDC_RS232_v125_Centronic-if00`  
-If you run Home Assistant within a Virtual Machine or a Docker container, it 
-might be useful use a different device path.  
-Note: The serial port is opened using 
-the [pySerial serial_for_url handler](https://pyserial.readthedocs.io/en/latest/url_handlers.html).
-Therefore connections e.g.  over a TCP/IP socket are supported as well.
+All settings below are in the cover's form: **Settings → Devices & services → Becker**, then **Add cover** for a new cover, or **⋮ → Reconfigure** next to an existing cover. Changes take effect right after saving. Positions use Home Assistant's scale: `0` is closed and `100` is open.
 
-The Becker integration uses a database file `centronic-stick.db` located in the 
-Home Assistant configuration folder to store an incremental number for each unit.
-You can change the filename if needed. If the database file gets lost it will be
-restored on startup automatically. In case any cover does not respond press the STOP 
-button several times.
-```yaml
-cover:
-  - platform: becker
-    device: "/dev/my-becker-centronic-usb"
-    filename: "my-centronic-stick.db"
-```
+### Pair a cover with the USB stick
 
-## Position by Travel Time
-There is no feedback from the covers available! In order to track the position of
-the cover, it is recommended to add the travel time for each cover. Determine the
-movement time in ***seconds*** for each cover from closed to open position. To
-improve the precision, add the movement time from open to closed position as well.  
-This will also enable the ability to set the cover position from Home Assistant user 
-interface or through the service `cover.set_cover_position`.
-```yaml
-cover:
-  - platform: becker
-    covers:
-      living_room:
-        friendly_name: "Living room Cover"
-        channel: "2:1"
-        # The travel time for direction up is sufficient if travel time for up and down are equal
-        travelling_time_up: 30
-        # Optional travel time for direction down
-        travelling_time_down: 26.5
-```
+The stick behaves like an additional Becker remote, so pairing works the same way as adding a second remote to a receiver. Keep your existing remote as the master remote. Don't program the stick as master.
 
-## Position by value template
-In some cases it might be useful to add a value template to determine the position
-of your cover. For example for a roof window with rain sensor. In case of rain, 
-the roof window will close, but you cannot determine this without an additional 
-sensor.  
-Every time the template generates a new result, the position of the cover is overwritten 
-by the result of the template.  
-The following results are valid:
-- any number between `0` and `100` where `0` is `closed` and `100` is `open`
-- logic values where
-  - `'closed'`, `'false'`, `False` are `closed`
-  - `'open'`, `'true'`, `True` are `open`
-- unknown values `'unknown'`, `'unavailable'`, `'none'`, `None`  
-The unknown values are useful to set the position only to confirm one specific 
-position, like closed in the example below. For any other values the position 
-will not changed. This allows to use the value template in conjunction with the position 
-by travel time.
-```yaml
-cover:
-  - platform: becker
-    covers:
-      roof_window:
-        friendly_name: "Roof window"
-        channel: "3:1"
-        travelling_time_up: 15
-        # Set position to closed (0) if sensor.roof_window is closed, otherwise keep value
-        value_template: "{{ 0 if is_state('sensor.roof_window', 'closed') else None }}"
-```
+1. Put the receiver into pairing mode. Usually you hold the programming button on the master remote until the motor clicks once. Check your Becker manual for your model.
+2. Then do one of these:
+   - **New cover:** in **Add cover**, enter the channel and submit. On the next screen, leave **Send pairing signal now** ticked and submit.
+   - **Existing cover:** open the cover's device page and press the **Pair** button.
+3. The receiver confirms with a single click followed by a double click.
 
-## Position tracking for cover commands from Becker remotes
-Usually there is at least one remote, the master remote, used to control the cover.
-The remote communicates directly with the cover. It is possible to receive and track 
-all remote commands within home assistant. Therefore the position of the cover
-is updated whenever a remote command is received.  
-The easiest way to link a remote is [Learn a remote](#learn-a-remote) in the
-cover's **Reconfigure** screen. For YAML, or to look the ID up yourself, enable
-debug log messages (see troubleshooting). The debug message will look as follows:  
-`... DEBUG ... \[custom_components.becker.pybecker.becker_helper]` Received packet: 
-unit_id: `12345`, channel: `2`, command: HALT, argument: 0, packet: ...
-```yaml
-cover:
-  - platform: becker
-    covers:
-      living_room:
-        friendly_name: "Living room Cover"
-        channel: "2:1"
-        travelling_time_up: 30
-        travelling_time_down: 26.5
-        # The remote ID consists of the unit_id and the channel separated by a colon
-        # Multiple ID's separated by comma are possible
-        remote_id: "12345:2"
-```
-
-## Intermediate cover position
-Becker covers supports two intermediate positions. One when opening the cover 
-and one when closing the cover. Please see the manual of your cover to see how
-to program these intermediate positions in your cover.  
-Your cover will travel to the corresponding intermediate position if your double
-tab the UP or DOWN button on your remote.  
-The default intermediate positions in the Becker integration are `25` for UP 
-direction and `75` for DOWN direction, where `0` is `closed` and `100` is `open`.
-This behavior is imitated by the Becker integration in Home Assistant. To imitate
-the cover movement properly in Home Assistant it is required to set the positions properly.  
-You can calculate the `intermediate_position_up`. You need to measure the runtime from 
-closed position to the intermediate position in direction UP (double tap UP 
-on your remote). Divide the measured time by the `travelling_time_up` and 
-multiply the result by `100`.  
-You can do the same for the `intermediate_position_up`. Measure the runtime from 
-closed position to the intermediate position in direction DOWN (double tap DOWN on 
-your remote). Divide the measured time by the `travelling_time_up` and multiply 
-the result by `100`.
-```yaml
-  - platform: becker
-    covers:
-      kitchen:
-        friendly_name: "Kitchen Cover"
-        channel: "1"
-        intermediate_position_up: 70
-        intermediate_position_down: 40
-```
-If you have not programmed any intermediate positions in your cover, you should 
-disable the intermediate cover position.
-```yaml
-  - platform: becker
-    covers:
-      kitchen:
-        friendly_name: "Kitchen Cover"
-        channel: "1"
-        intermediate_position: off
-```
-
-## Tilt intermediate
-The Becker integration provide the ability to control the intermediate position from 
-Home Assistant user interface. Therefore the tilt functionality of Home Assistant is used 
-to issue the commands to drive to intermediate positions.
-If you don't want to control the intermediate positions from Home Assistant, you can 
-disable the tilt functionality for each cover.  
-This will also disable the service `cover.close_cover_tilt` and `cover.open_cover_tilt`.
-```yaml
-  - platform: becker
-    covers:
-      kitchen:
-        friendly_name: "Kitchen Cover"
-        channel: "1"
-        tilt_intermediate: off
-```
-Note: You still need to set the intermediate cover position appropriately!
-
-## Tilt blind
-The Becker integration provides support for blinds. The Becker blinds allow to control
-their tilt position by short press of the UP or DOWN button on their master remote. 
-A long press of the UP or DOWN button fully open or closes the blinds.  
-To control the tilt position of your blind and for proper tracking of your blind position, 
-you need to enable `tilt_blind`. This changes the tilt functionality of Home Assistant 
-from intermediate position to tilt blind. The default tilt time is 0.3 seconds. 
-This time can be adapted to your needs.
-```yaml
-  - platform: becker
-    covers:
-      Living_room_blind:
-        friendly_name: "Living room blind"
-        channel: "2:2"
-        tilt_blind: on
-        tilt_time_blind: 0.5
-```
-
-# Pairing the Becker USB Stick with your covers
-To use your cover in HA you need to pair it first with the Becker USB stick. The
-pairing is always between your remote and the shutter. The shutter will react on 
-the commands of all paired remotes.  
-Usually you already have programmed your original remote as the master remote. It 
-is not recommended to program the USB stick as the master remote! The USB stick is 
-like an additional remote. Therefore the pairing procedure for the USB stick is 
-the same as with additional remotes. Please refer to you manual for more details.  
-
-You have to put your shutter in pairing mode before. This is done by pressing the 
-program button of your master remote until you hear a "clac" noise
-
-To pair your shutter run the service becker.pair once (see HA Developer Tools -> Services).
-The shutter will confirm the successful pair with a single "clac" noise followed by a double "clac" noise.
-
-Example data for service becker.pair:
+The `becker.pair` action (**Developer tools → Actions**) does the same for advanced use:
 
 ```yaml
-service: becker.pair
+action: becker.pair
 data:
-  # Example data to pair your cover with USB stick unit 1 - channel 1
-  channel: 1
-  unit: 1
+  channel: 1   # 1-7
+  unit: 1      # 1-5, optional
 ```
 
-# Events for Remote Commands
+### Track the position by travel time
+
+Becker covers don't report their position, so Home Assistant estimates it from how long the cover moves.
+
+1. Time the cover from fully closed to fully open, in seconds. Enter it as **Travel time up**.
+2. Optional: time it from fully open to fully closed and enter it as **Travel time down**. If you leave it empty, the up time is used for both directions.
+
+With a travel time set, you can also move the cover to a position, for example 40 %, from the dashboard or with `cover.set_cover_position`. This isn't available when the cover uses a **Position template**.
+
+### Follow your physical remotes
+
+Without this, Home Assistant doesn't know when someone uses a Becker remote, and its position estimate drifts.
+
+- **Recommended:** link the remote with [Learn a remote](#learn-a-remote) (press STOP ■ twice).
+- **Manually:** enter the ID in **Remote ID(s)** as `ID:channel`, for example `12345:2`. Separate several remotes with commas. You can find an ID on the **Remote** event entity or in the debug log (see [Troubleshooting](#troubleshooting)).
+
+### Set the position from another sensor
+
+For example, a roof window with a rain sensor closes by itself when it rains. Enter a template in **Position template**. Every time the template's result changes, it overwrites the cover's position:
+
+- a number from `0` to `100` sets that position;
+- `open`, `true` mean open; `closed`, `false` mean closed;
+- `unknown`, `unavailable`, `none` leave the position unchanged.
+
+Use the last group to confirm only one state and keep the travel-time estimate otherwise:
+
+```jinja
+{{ 0 if is_state('binary_sensor.roof_window', 'off') else None }}
+```
+
+### Intermediate positions
+
+Becker motors can store two intermediate positions: one reached by double-tapping ▲ (from closed) and one reached by double-tapping ▼ (from open). Program them on the motor first, following your Becker manual. Then tell Home Assistant where they are:
+
+- **Intermediate position up:** time the cover from fully closed to the up position (double-tap ▲). Divide by **Travel time up** and multiply by 100. Example: 9 s ÷ 30 s × 100 = `30`.
+- **Intermediate position down:** time the cover from fully open to the down position (double-tap ▼). Divide by **Travel time down**, multiply by 100, and subtract the result from 100. Example: 18 s ÷ 26 s × 100 ≈ 69, so `31`.
+
+Defaults are `25` (up) and `75` (down). If your motor has no intermediate positions programmed, untick **Enable intermediate positions**.
+
+### Tilt buttons: intermediate positions or venetian blind
+
+Home Assistant's tilt buttons can do one of two things:
+
+- **Tilt moves to intermediate position** (default when intermediate positions are enabled): tilt open drives to the up position, tilt close to the down position. Untick it if you don't want tilt buttons for this.
+- **Tilt as venetian blind:** for Becker venetian blinds, where a short press of ▲/▼ tilts the slats and a long press moves the blind. Tilt open/close sends a short movement. **Blind tilt time** sets how long it is (default 0.3 s); increase it if the slats barely move. This replaces the intermediate tilt.
+
+## Events for Remote Commands
 In addition to processing remote commands to update cover states, the
 integration also fires explicit events of type
 `becker_remote_packet_received` for each command it receives from a remote.
@@ -464,7 +319,7 @@ data:
   command: "up"
 ```
 
-# Units and Channels
+## Units and Channels
 The USB stick acts like a remote control
 The remote control protocol is able to access up to 7 devices like shutters, these are addressed as "channels" (1-7). There's also a broadcast channel (15) which addresses all of the devices at the same time. With this you are able to send a "UP" or "DOWN" command to all the covers at the same time.
 
@@ -476,11 +331,14 @@ If you leave out the unit number, the unit number 1 will be used, so the USB sti
 This means `1` and `1:1` are the same channel. Home Assistant won't let you add a second cover on a channel that is already used, in either spelling.
 I think that's all the magic behind the Becker protocol.
 
-# Troubleshooting
+## Troubleshooting
 If you have any trouble follow these steps:
-- Restart Home Assistant after you have plugged in the USB stick
-- Enable debug log for becker.  
-Add the following lines to your configuration.yaml to enable debug log:
+- Restart Home Assistant after you have plugged in the USB stick.
+- Check the **Connection** sensor on the Centronic stick device: it shows whether the stick is reachable.
+- Enable debug logging: **Settings → Devices & services → Becker → ⋮ → Enable debug logging**. Reproduce the problem, then choose **Disable debug logging** to download the log.
+- When asking for help, attach the diagnostics file: **Settings → Devices & services → Becker → ⋮ → Download diagnostics**.
+
+Alternatively, enable debug logging permanently in `configuration.yaml`:
 
 ```yaml
 logger:
@@ -515,3 +373,30 @@ Another way is to open a new issue on
 [GitHub](https://github.com/Gyang91/hass-becker-component-plus-pybecker/issues).
 
 To disable debug log for becker set the level back from `debug` to `info`.
+
+## Legacy YAML reference (deprecated)
+
+YAML configuration is only read once, to import it into the UI. After that, remove it from `configuration.yaml`; a repair issue reminds you. The options match the UI fields above.
+
+```yaml
+cover:
+  - platform: becker
+    device: "/dev/serial/by-id/usb-BECKER-ANTRIEBE_GmbH_CDC_RS232_v125_Centronic-if00"  # optional
+    filename: "centronic-stick.db"  # optional, in the config folder
+    covers:
+      living_room:
+        friendly_name: "Living room"
+        channel: "2:1"                  # string: "1"-"7" or "unit:channel"
+        travelling_time_up: 30          # Travel time up
+        travelling_time_down: 26.5      # Travel time down
+        remote_id: "12345:2"            # Remote ID(s)
+        value_template: "{{ ... }}"     # Position template
+        intermediate_position: on       # Enable intermediate positions
+        intermediate_position_up: 25
+        intermediate_position_down: 75
+        tilt_intermediate: on           # Tilt moves to intermediate position
+        tilt_blind: off                 # Tilt as venetian blind
+        tilt_time_blind: 0.3            # Blind tilt time
+```
+
+The device can also be a `serial_for_url` address such as `socket://192.168.1.20:5000` for a serial-to-TCP bridge.
