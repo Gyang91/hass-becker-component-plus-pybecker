@@ -1,13 +1,17 @@
+[![release](https://img.shields.io/github/v/release/Gyang91/hass-becker-component-plus-pybecker?label=release&color=blue)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/releases/latest)
+[![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/docs/faq/custom_repositories/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.11%2B-41BDF5?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![CI](https://img.shields.io/github/actions/workflow/status/Gyang91/hass-becker-component-plus-pybecker/ci.yml?branch=main&label=CI)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/ci.yml)
+[![HACS validation](https://img.shields.io/github/actions/workflow/status/Gyang91/hass-becker-component-plus-pybecker/validate.yml?branch=main&label=HACS%20validation)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/validate.yml)
+[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/blob/main/.github/dependabot.yml)
+[![license](https://img.shields.io/github/license/Gyang91/hass-becker-component-plus-pybecker?label=license)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/blob/main/LICENSE)
+[![commits](https://img.shields.io/github/commit-activity/y/Gyang91/hass-becker-component-plus-pybecker?label=commits)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commits/main)
+
 # Becker for Home Assistant
 
-<p align="center"><img src="brand/logo.png" alt="Becker for Home Assistant" width="512"></p>
+_Originally created by [ole](https://github.com/ole1986) and [Nicolas Berthel](https://github.com/nicolasberthel), continued by [Rainer Staude](https://github.com/RainerStaude/hass-becker-component-plus-pybecker); this fork by [Gyang91](https://github.com/Gyang91) brings it to current Home Assistant releases. See [Highlights](#highlights)._
 
-[![Release](https://img.shields.io/github/v/release/Gyang91/hass-becker-component-plus-pybecker?color=blue)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/releases/latest)
-[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories/)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.11%2B-41BDF5?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
-[![CI](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/ci.yml/badge.svg)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/ci.yml)
-[![Validate](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/validate.yml/badge.svg)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/validate.yml)
-[![License](https://img.shields.io/github/license/Gyang91/hass-becker-component-plus-pybecker)](LICENSE)
+<p align="center"><img src="https://raw.githubusercontent.com/Gyang91/hass-becker-component-plus-pybecker/main/brand/logo.png" alt="Becker for Home Assistant" width="512"></p>
 
 A maintained Home Assistant integration for controlling **Becker Centronic RF covers** with a Becker Centronic USB stick.
 
