@@ -33,7 +33,7 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.template import Template
 
-from . import signal_for_entry
+from . import cover_unique_id, signal_for_entry
 from .const import (
     CLOSED_POSITION,
     COMMANDS,
@@ -216,7 +216,7 @@ class BeckerEntity(BeckerStickEntity, CoverEntity, RestoreEntity):
         self._signal = signal
         self._attr = dict()
         self._channel = channel
-        self._attr_unique_id = channel
+        self._attr_unique_id = cover_unique_id(entry_id, channel)
         device_info = DeviceInfo(
             identifiers={(DOMAIN, f"{entry_id}_{channel}")},
             name=name,

@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryError, ConfigEntryNotReady, HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.dispatcher import dispatcher_send
 from homeassistant.helpers.typing import ConfigType
@@ -103,6 +104,64 @@ def _remove_stale_cover_devices(hass: HomeAssistant, entry: ConfigEntry) -> None
             continue
         if becker_identifiers and becker_identifiers.isdisjoint(expected_identifiers):
             device_registry.async_remove_device(device.id)
+
+def cover_unique_id(entry_id: str, channel: str) -> str:
+    """Return the unique id of a cover, scoped to its stick."""
+    return f"{entry_id}_{channel}"
+
+
+def pair_button_unique_id(entry_id: str, channel: str) -> str:
+    """Return the unique id of a cover's pair button, scoped to its stick."""
+    return f"{entry_id}_{channel}_pair"
+
+
+def _migrate_unique_ids(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Scope cover and pair button unique ids to their stick.
+
+    Up to 1.0.6 the ids were the bare channel ("1", "2:1") and
+    "<channel>_pair", so a second stick could not add a cover on a channel
+    the first stick already used. Only the registry ids change: entity ids,
+    names, history and the restored position stay as they are. Running it
+    again is harmless because migrated ids no longer match.
+    """
+    entity_registry = er.async_get(hass)
+    old_to_new: dict[tuple[str, str], str] = {}
+    for subentry in entry.subentries.values():
+        if subentry.subentry_type != SUBENTRY_TYPE_COVER:
+            continue
+        channel = subentry.data[CONF_CHANNEL]
+        old_to_new[("cover", channel)] = cover_unique_id(entry.entry_id, channel)
+        old_to_new[("button", f"{channel}_pair")] = pair_button_unique_id(
+            entry.entry_id, channel
+        )
+
+    for reg_entry in er.async_entries_for_config_entry(
+        entity_registry, entry.entry_id
+    ):
+        if reg_entry.platform != DOMAIN:
+            continue
+        new_unique_id = old_to_new.get((reg_entry.domain, reg_entry.unique_id))
+        if new_unique_id is None:
+            continue
+        if entity_registry.async_get_entity_id(
+            reg_entry.domain, DOMAIN, new_unique_id
+        ):
+            _LOGGER.warning(
+                "Not migrating %s: unique id %s is already in use",
+                reg_entry.entity_id,
+                new_unique_id,
+            )
+            continue
+        _LOGGER.debug(
+            "Migrating %s unique id %s -> %s",
+            reg_entry.entity_id,
+            reg_entry.unique_id,
+            new_unique_id,
+        )
+        entity_registry.async_update_entity(
+            reg_entry.entity_id, new_unique_id=new_unique_id
+        )
+
 
 type BeckerConfigEntry = ConfigEntry[Becker]
 
@@ -346,6 +405,7 @@ async def _async_finish_setup(
         model="Centronic USB stick",
     )
     _remove_stale_cover_devices(hass, entry)
+    _migrate_unique_ids(hass, entry)
 
     entry.async_on_unload(entry.add_update_listener(_update_listener))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

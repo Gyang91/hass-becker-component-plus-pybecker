@@ -5,6 +5,7 @@ from homeassistant.const import CONF_FRIENDLY_NAME, EntityCategory
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo, async_get_device_id_by_identifier
 
+from . import pair_button_unique_id
 from .const import CONF_CHANNEL, DOMAIN, MANUFACTURER, SUBENTRY_TYPE_COVER
 from .entity import BeckerStickEntity
 from .pybecker.becker_helper import BeckerConnectionError
@@ -41,7 +42,7 @@ class BeckerPairButton(BeckerStickEntity, ButtonEntity):
         """Init the pair button."""
         super().__init__(becker, entry_id)
         self._channel = channel
-        self._attr_unique_id = f"{channel}_pair"
+        self._attr_unique_id = pair_button_unique_id(entry_id, channel)
         # Share the cover's device so the button shows up on the cover. The
         # name is set here too because platforms set up concurrently and the
         # button may register before the cover names the device.
