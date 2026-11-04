@@ -329,7 +329,7 @@ class BeckerConfigFlow(ConfigFlow, domain=DOMAIN):
             except BeckerConnectionError:
                 errors["base"] = "cannot_connect"
             else:
-                return self.async_update_reload_and_abort(
+                return self.async_update_and_abort(
                     entry,
                     data_updates={
                         CONF_CONNECTION_TYPE: CONNECTION_TYPE_SERIAL,
@@ -375,7 +375,7 @@ class BeckerConfigFlow(ConfigFlow, domain=DOMAIN):
             except BeckerConnectionError:
                 errors["base"] = "cannot_connect"
             else:
-                return self.async_update_reload_and_abort(
+                return self.async_update_and_abort(
                     entry,
                     data_updates={
                         CONF_CONNECTION_TYPE: CONNECTION_TYPE_NETWORK,
