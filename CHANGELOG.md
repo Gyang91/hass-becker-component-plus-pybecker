@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.1.0...v1.2.0) (2026-11-04)
+
+
+### Features
+
+* learn a remote's ID by pressing a button on it ([8fdf340](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/8fdf340dac2cddc45a80d225b024d8a741f2d6d6))
+
 ## [1.1.0](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.6...v1.1.0) (2026-11-04)
 
 
