@@ -126,17 +126,16 @@ Physical Becker remotes talk to the cover directly, so Home Assistant only knows
 
 1. Open **Settings → Devices & services → Becker**, find the cover and choose **Reconfigure**.
 2. Tick **Learn a remote now** and submit.
-3. Within 45 seconds, press **STOP ■ twice** on the remote, about 2 seconds apart.
+3. Within 45 seconds, take the Becker remote you use for this cover and press **STOP ■ twice**, about 2 seconds apart, just as you would to stop this cover.
+   - If that remote controls several covers, switch it to this cover first, the way you normally do. You don't need to know any channel number.
    - STOP is the button with the square symbol **■**. On most Becker hand-held remotes it sits between ▲ and ▼, but look for the symbol rather than the position. STOP doesn't start the cover moving.
-   - **Remote with several channels?** First select the channel you normally use on that remote to move this cover: the one where ▲ moves this cover. This is the remote's own channel and has nothing to do with the **Channel** number you entered in Home Assistant (that one belongs to the USB stick). Don't use the setting that moves all covers at once; it is ignored.
-   - Remote with a single channel: nothing to select.
    - If your remote has no STOP button, press ▲ twice instead, about 2 seconds apart. The cover will move.
-4. Home Assistant shows what it heard, for example **■ STOP, ■ STOP from remote 1737B, remote channel 2**. You don't need to know the ID: check that the buttons match what you just pressed. Then choose:
+4. Home Assistant shows what it heard, for example **■ STOP, ■ STOP**. Check that these are the buttons you just pressed. Then choose:
    - **Link this remote** to add it. From then on, presses on that remote update the cover's position in Home Assistant.
    - **Listen again** if the buttons don't match, for example because someone else used a remote at the same time.
    - **Save settings without linking** to keep your other changes only.
 
-Two presses from the same remote are needed, so a single stray press from another remote is never picked up. If the remote is already linked to another cover, Home Assistant names that cover. That's fine when one remote channel controls several covers. If the remote is already linked to this cover, nothing is added.
+Two presses from the same remote are needed, so a single stray press from another remote is never picked up. If the remote is already linked to another cover, Home Assistant names that cover. That's fine when one remote controls several covers. If the remote is already linked to this cover, nothing is added.
 
 Learning only listens: the integration sends nothing while it waits. If no remote is heard, you can listen again or save your other changes without a remote.
 
@@ -243,7 +242,7 @@ The stick behaves like an additional Becker remote, so pairing works the same wa
 
 1. Put the receiver into pairing mode. Usually you hold the programming button on the master remote until the motor clicks once. Check your Becker manual for your model.
 2. Then do one of these:
-   - **New cover:** in **Add cover**, enter the channel and submit. On the next screen, leave **Send pairing signal now** ticked and submit.
+   - **New cover:** in **Add cover**, enter a name. The **Channel** is already filled in with a free channel of the USB stick; keep it. Submit. On the next screen, leave **Send pairing signal now** ticked and submit.
    - **Existing cover:** open the cover's device page and press the **Pair** button.
 3. The receiver confirms with a single click followed by a double click.
 
