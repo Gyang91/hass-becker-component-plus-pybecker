@@ -78,6 +78,8 @@ Home Assistant therefore updates cover state from one or more of these sources:
 - received commands from configured physical Becker remotes;
 - an optional position template backed by another Home Assistant entity.
 
+Because the position is an estimate, covers report an *assumed state*: open, close and stop stay available in the dashboard even when Home Assistant thinks the cover is already fully open or closed, so you can always correct a wrong estimate.
+
 The **Connection** diagnostic binary sensor reflects live communicator availability. Received physical-remote packets are also exposed through the **Remote** event entity and the `becker_remote_packet_received` event.
 
 ## Example use cases
