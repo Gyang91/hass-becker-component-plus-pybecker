@@ -4,7 +4,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/Gyang91/hass-becker-component-plus-pybecker/ci.yml?branch=main&label=CI)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/ci.yml)
 [![HACS validation](https://img.shields.io/github/actions/workflow/status/Gyang91/hass-becker-component-plus-pybecker/validate.yml?branch=main&label=HACS%20validation)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/actions/workflows/validate.yml)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/blob/main/.github/dependabot.yml)
-[![license](https://img.shields.io/github/license/Gyang91/hass-becker-component-plus-pybecker?label=license)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/blob/main/LICENSE)
 [![commits](https://img.shields.io/github/commit-activity/y/Gyang91/hass-becker-component-plus-pybecker?label=commits)](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commits/main)
 
 # Becker for Home Assistant
