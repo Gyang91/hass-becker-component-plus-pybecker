@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.6...v1.1.0) (2026-11-04)
+
+
+### Features
+
+* keep cover buttons usable by reporting an assumed state ([addf250](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/addf250fdbb729f35919eb1154e1898c360c9c97))
+
+
+### Bug Fixes
+
+* treat "1" and "1:1" as the same channel when adding a cover ([4343d9a](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/4343d9ac8f79de5c6dffe4c6c4828d03ce5789f1))
+
 ## [1.0.6](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.0.5...v1.0.6) (2026-11-04)
 
 
