@@ -15,7 +15,7 @@ from homeassistant.components.cover import (
     DOMAIN as COVER_DOMAIN,
     SERVICE_OPEN_COVER,
 )
-from homeassistant.const import ATTR_ENTITY_ID, STATE_UNAVAILABLE
+from homeassistant.const import ATTR_ASSUMED_STATE, ATTR_ENTITY_ID, STATE_UNAVAILABLE
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 
@@ -134,3 +134,13 @@ async def test_cover_action_translates_connection_failure(
     assert exc.value.translation_domain == "becker"
     assert exc.value.translation_key == "communication_failed"
 
+
+
+@pytest.mark.usefixtures("mock_becker")
+async def test_cover_reports_assumed_state(
+    hass: HomeAssistant,
+    mock_config_entry_with_cover: MockConfigEntry,
+) -> None:
+    """The position is estimated, so open and close stay usable in the UI."""
+    await setup_integration(hass, mock_config_entry_with_cover)
+    assert hass.states.get(ENTITY_ID).attributes[ATTR_ASSUMED_STATE] is True

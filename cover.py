@@ -199,6 +199,10 @@ class BeckerEntity(BeckerStickEntity, CoverEntity, RestoreEntity):
     _attr_name = None
     _attr_should_poll = False
     _attr_device_class = CoverDeviceClass.SHUTTER
+    # Becker receivers never report their position; it is estimated. Keep
+    # open and close usable in the UI even when the estimate says the cover
+    # is already there.
+    _attr_assumed_state = True
 
     def __init__(
         self, becker, name, channel, entry_id, signal,
