@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.2.2...v1.3.0) (2026-11-04)
+
+
+### Features
+
+* no channel numbers to figure out when adding a cover or learning a remote ([e986dfc](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/e986dfc2eb6fdff24321334d44a1625ffa25ec75))
+
 ## [1.2.2](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.2.1...v1.2.2) (2026-11-04)
 
 
