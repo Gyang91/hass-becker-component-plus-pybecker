@@ -147,6 +147,7 @@ Learning only listens: the integration sends nothing while it waits. If no remot
 - Pairing still requires the target Becker receiver to be placed into its learn/pairing mode.
 - Network connections require a transparent serial-to-TCP bridge; the integration does not configure or manage that bridge.
 - Legacy YAML configuration is supported for migration but is deprecated in favor of UI configuration.
+- Removing a cover from Home Assistant doesn't unpair its motor; that is done on the motor with its master remote (see your Becker manual). So that an old motor never moves together with a new cover, **Add cover** never suggests a channel a removed cover used, and warns if you type one. Covers removed before version 1.3.1 aren't remembered.
 - Two Centronic sticks in one Home Assistant can't both have a cover on the same channel: the second cover is not created. Use different channels or units on the second stick.
 
 ## Removal
