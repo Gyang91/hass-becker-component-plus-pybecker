@@ -77,3 +77,7 @@ jobs:
           if [ "$RELEASE" = true ]; then
             gh workflow run release.yml --repo "$REPO" --ref main
           fi
+          # For the same reason, run CI and Validate on main so the README
+          # badges reflect the merged code instead of an older run.
+          gh workflow run ci.yml --repo "$REPO" --ref main
+          gh workflow run validate.yml --repo "$REPO" --ref main
