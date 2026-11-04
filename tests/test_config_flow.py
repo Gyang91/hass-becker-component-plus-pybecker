@@ -31,6 +31,7 @@ from custom_components.becker.const import (
 from custom_components.becker.config_flow import (
     CoverSubentryFlowHandler,
     _import_cover_data,
+    _next_free_channel,
     _swap_db,
     _swap_live_db,
     _test_connection,
@@ -806,3 +807,39 @@ async def test_subentry_add_same_channel_other_unit_allowed(
     )
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "pair"
+
+
+def _suggested(result, key: str):
+    """Return the value a form pre-fills for one field."""
+    for marker in result["data_schema"].schema:
+        if marker == key:
+            return (marker.description or {}).get("suggested_value")
+    raise KeyError(key)
+
+
+@pytest.mark.usefixtures("mock_becker")
+async def test_add_cover_prefills_next_free_channel(
+    hass: HomeAssistant, mock_config_entry_with_cover: MockConfigEntry
+) -> None:
+    """Channel 1 is used, so the form offers 2; the user doesn't have to pick."""
+    await setup_integration(hass, mock_config_entry_with_cover)
+    result = await hass.config_entries.subentries.async_init(
+        (mock_config_entry_with_cover.entry_id, SUBENTRY_TYPE_COVER),
+        context={"source": SOURCE_USER},
+    )
+    assert _suggested(result, CONF_CHANNEL) == "2"
+
+
+@pytest.mark.parametrize(
+    ("used", "expected"),
+    [
+        ([], "1"),
+        (["1", "3"], "2"),
+        (["1:1", "2"], "3"),
+        ([str(c) for c in range(1, 8)], "2:1"),
+        ([str(c) for c in range(1, 8)] + ["2:1"], "2:2"),
+        ([f"{u}:{c}" for u in range(1, 6) for c in range(1, 8)], None),
+    ],
+)
+def test_next_free_channel(used, expected) -> None:
+    assert _next_free_channel(used) == expected

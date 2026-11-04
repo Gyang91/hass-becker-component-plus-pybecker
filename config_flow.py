@@ -238,6 +238,19 @@ def _channel_key(channel: str) -> tuple[int, int]:
     return int(unit or 1), int(number)
 
 
+def _next_free_channel(used: list[str]) -> str | None:
+    """Return the first USB stick channel no cover uses yet.
+
+    Unit 1 is written as a bare channel ("1"), other units as "unit:channel".
+    """
+    taken = {_channel_key(channel) for channel in used}
+    for unit in range(1, 6):
+        for channel in range(1, 8):
+            if (unit, channel) not in taken:
+                return str(channel) if unit == 1 else f"{unit}:{channel}"
+    return None
+
+
 def _import_cover_data(slug: str, cover_config: dict[str, Any]) -> dict[str, Any]:
     """Map a validated YAML cover config onto subentry data."""
     data: dict[str, Any] = {CONF_CHANNEL: cover_config[CONF_CHANNEL]}
@@ -595,10 +608,20 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
                 self._cover_input = user_input
                 return await self.async_step_pair()
 
+        suggested = user_input
+        if suggested is None:
+            free = _next_free_channel(
+                [
+                    subentry.data[CONF_CHANNEL]
+                    for subentry in self._get_entry().subentries.values()
+                    if subentry.subentry_type == SUBENTRY_TYPE_COVER
+                ]
+            )
+            suggested = {CONF_CHANNEL: free} if free else None
         return self.async_show_form(
             step_id="user",
             data_schema=self.add_suggested_values_to_schema(
-                COVER_ADD_SCHEMA, user_input
+                COVER_ADD_SCHEMA, suggested
             ),
             errors=errors,
         )

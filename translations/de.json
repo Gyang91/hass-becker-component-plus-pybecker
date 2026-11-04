@@ -98,7 +98,7 @@
             "tilt_time_blind": "Jalousie-Neigezeit"
           },
           "data_description": {
-            "channel": "Kanal des USB-Sticks für diese Abdeckung (nicht der Kanal deiner Handfernbedienung): 1-7 oder Einheit:Kanal (zum Beispiel 2:1), wenn eine andere Sendeeinheit als 1 verwendet wird. Neue Abdeckung: wähle einen freien Kanal und lerne sie an. Bereits mit diesem Stick angelernt: nutze den Kanal, mit dem sie angelernt wurde.",
+            "channel": "Bereits mit einem freien Kanal des USB-Sticks ausgefüllt. Für eine neue Abdeckung so lassen. Nur ändern, wenn diese Abdeckung schon auf einem anderen Kanal mit diesem Stick angelernt wurde (1-7 oder Einheit:Kanal wie 2:1).",
             "value_template": "Optionales Template, das die Position der Abdeckung aus einer anderen Entität liefert.",
             "remote_id": "Optionale IDs physischer Fernbedienungen im Format ID:Kanal (zum Beispiel 12345:2). Mehrere Fernbedienungen mit Kommas trennen.",
             "travelling_time_down": "Sekunden für die Fahrt von offen nach geschlossen. Aktiviert die Positionssteuerung.",
@@ -126,7 +126,7 @@
             "remote_id": "Optionale IDs physischer Fernbedienungen im Format ID:Kanal (zum Beispiel 12345:2). Mehrere Fernbedienungen mit Kommas trennen.",
             "travelling_time_down": "Sekunden für die Fahrt von offen nach geschlossen. Aktiviert die Positionssteuerung.",
             "travelling_time_up": "Sekunden für die Fahrt von geschlossen nach offen. Aktiviert die Positionssteuerung.",
-            "learn_remote": "Drücke nach dem Absenden zweimal STOPP ■ auf der Becker-Fernbedienung, der diese Abdeckung folgen soll. STOPP setzt die Abdeckung nicht in Bewegung."
+            "learn_remote": "Nimm nach dem Absenden die Becker-Fernbedienung, mit der du diese Abdeckung bedienst, und drücke zweimal STOPP ■. STOPP setzt die Abdeckung nicht in Bewegung."
           }
         },
         "pair": {
@@ -138,7 +138,7 @@
         },
         "learn_remote_confirm": {
           "title": "Ist das deine Fernbedienung?",
-          "description": "Empfangen: **{buttons}** von einer Fernbedienung (ID {remote_id}, Fernbedienungskanal {remote_channel}).\n\nWenn das die Tasten sind, die du gerade gedrückt hast, verknüpfe sie. Wenn nicht (zum Beispiel hat gleichzeitig jemand anderes eine Fernbedienung benutzt), lausche erneut.",
+          "description": "Empfangen: **{buttons}** von einer Fernbedienung.\n\nWenn das die Tasten sind, die du gerade gedrückt hast, verknüpfe sie. Wenn nicht (zum Beispiel hat gleichzeitig jemand anderes eine Fernbedienung benutzt), lausche erneut.",
           "menu_options": {
             "learn_remote_link": "Diese Fernbedienung verknüpfen",
             "learn_remote": "Erneut lauschen",
@@ -147,7 +147,7 @@
         },
         "learn_remote_failed": {
           "title": "Keine Fernbedienung empfangen",
-          "description": "Innerhalb von {seconds} Sekunden wurde keine Fernbedienung zweimal gedrückt. Prüfe, ob die Fernbedienung in Reichweite des Centronic-Sticks ist. Wähle bei einer Fernbedienung mit mehreren Kanälen den Kanal, der diese Abdeckung bewegt, nicht den für alle Abdeckungen. Drücke dann zweimal STOPP ■ im Abstand von etwa 2 Sekunden.",
+          "description": "Innerhalb von {seconds} Sekunden wurde keine Fernbedienung zweimal gedrückt. Prüfe, ob die Fernbedienung in Reichweite des Centronic-Sticks ist und auf diese Abdeckung eingestellt ist (nicht auf alle Abdeckungen gleichzeitig). Drücke dann zweimal STOPP ■ im Abstand von etwa 2 Sekunden.",
           "menu_options": {
             "learn_remote": "Erneut lauschen",
             "save_without_remote": "Einstellungen ohne Fernbedienung speichern"
@@ -155,7 +155,7 @@
         },
         "learn_remote_confirm_linked": {
           "title": "Ist das deine Fernbedienung?",
-          "description": "Empfangen: **{buttons}** von einer Fernbedienung (ID {remote_id}, Fernbedienungskanal {remote_channel}).\n\nWenn das die Tasten sind, die du gerade gedrückt hast, verknüpfe sie. Wenn nicht (zum Beispiel hat gleichzeitig jemand anderes eine Fernbedienung benutzt), lausche erneut.\n\n**Hinweis:** Diese Fernbedienung ist bereits mit **{covers}** verknüpft. Das ist in Ordnung, wenn ein Kanal mehrere Abdeckungen steuert. Wenn du eine andere Fernbedienung erwartet hast, lausche erneut.",
+          "description": "Empfangen: **{buttons}** von einer Fernbedienung.\n\nWenn das die Tasten sind, die du gerade gedrückt hast, verknüpfe sie. Wenn nicht (zum Beispiel hat gleichzeitig jemand anderes eine Fernbedienung benutzt), lausche erneut.\n\n**Hinweis:** Diese Fernbedienung ist bereits mit **{covers}** verknüpft. Das ist in Ordnung, wenn sie mehrere Abdeckungen steuert. Wenn du eine andere Fernbedienung erwartet hast, lausche erneut.",
           "menu_options": {
             "learn_remote_link": "Diese Fernbedienung verknüpfen",
             "learn_remote": "Erneut lauschen",
@@ -164,7 +164,7 @@
         },
         "learn_remote_known": {
           "title": "Fernbedienung bereits verknüpft",
-          "description": "Empfangen: **{buttons}** von Fernbedienung {remote_id}, Fernbedienungskanal {remote_channel}. Diese Fernbedienung ist bereits mit dieser Abdeckung verknüpft, es gibt nichts hinzuzufügen.",
+          "description": "Empfangen: **{buttons}**. Diese Fernbedienung ist bereits mit dieser Abdeckung verknüpft, es gibt nichts hinzuzufügen.",
           "menu_options": {
             "save_without_remote": "Einstellungen speichern",
             "learn_remote": "Auf eine andere Fernbedienung lauschen"
@@ -181,7 +181,7 @@
         "reconfigure_successful": "Abdeckung aktualisiert."
       },
       "progress": {
-        "learn_remote": "Drücke **zweimal STOPP ■** auf der Becker-Fernbedienung, im Abstand von etwa 2 Sekunden.\n\nSTOPP ist die Taste mit dem Quadrat-Symbol ■. Bei den meisten Becker-Handsendern liegt sie zwischen ▲ und ▼. STOPP setzt die Abdeckung nicht in Bewegung.\n\n**Fernbedienung mit mehreren Kanälen?** Wähle zuerst den Kanal, mit dem du diese Abdeckung auf dieser Fernbedienung normalerweise bedienst: den Kanal, bei dem ▲ diese Abdeckung bewegt. Das ist der Kanal der Fernbedienung und hat nichts mit der Kanalnummer zu tun, die du in Home Assistant eingetragen hast. Nutze nicht die Einstellung, die alle Abdeckungen gleichzeitig bewegt; sie wird ignoriert.\n\nKeine STOPP-Taste? Drücke stattdessen zweimal ▲, im Abstand von etwa 2 Sekunden. Die Abdeckung fährt dann.\n\nWarte bis zu {seconds} Sekunden…"
+        "learn_remote": "Nimm die Becker-Fernbedienung, mit der du diese Abdeckung bedienst, und drücke **zweimal STOPP ■** im Abstand von etwa 2 Sekunden, so wie du diese Abdeckung anhalten würdest.\n\nWenn die Fernbedienung mehrere Abdeckungen steuert, stelle sie zuerst wie gewohnt auf diese Abdeckung um.\n\nSTOPP ist die Taste mit dem Quadrat-Symbol ■. Bei den meisten Becker-Handsendern liegt sie zwischen ▲ und ▼. STOPP setzt die Abdeckung nicht in Bewegung.\n\nKeine STOPP-Taste? Drücke stattdessen zweimal ▲, im Abstand von etwa 2 Sekunden. Die Abdeckung fährt dann.\n\nWarte bis zu {seconds} Sekunden…"
       }
     }
   },
