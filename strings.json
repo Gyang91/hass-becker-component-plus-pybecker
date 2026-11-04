@@ -138,7 +138,7 @@
       "error": {
         "invalid_channel": "Channel must be 1-7 or unit:channel (for example 2:1).",
         "invalid_remote_id": "Remote ID must be formatted as ID:channel (for example 12345:2).",
-        "already_configured": "A cover with this channel is already configured."
+        "already_configured": "A cover on this channel is already configured. A channel without a unit uses unit 1, so 1 and 1:1 are the same channel."
       },
       "abort": {
         "reconfigure_successful": "Cover updated."

@@ -737,3 +737,72 @@ async def test_reconfigure_loaded_entry_reloads_once(
     assert mock_config_entry.data[CONF_DEVICE] == "/dev/ttyUSB9"
     assert setup_entry.call_count == 1
     assert "update listener" not in caplog.text
+
+
+@pytest.mark.usefixtures("mock_becker")
+@pytest.mark.parametrize("channel", ["1:1", "1"])
+async def test_subentry_add_same_channel_other_spelling(
+    hass: HomeAssistant,
+    mock_config_entry_with_cover: MockConfigEntry,
+    channel: str,
+) -> None:
+    """"1" and "1:1" address the same receiver, so both are rejected."""
+    await setup_integration(hass, mock_config_entry_with_cover)
+
+    result = await hass.config_entries.subentries.async_init(
+        (mock_config_entry_with_cover.entry_id, SUBENTRY_TYPE_COVER),
+        context={"source": SOURCE_USER},
+    )
+    result = await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {CONF_CHANNEL: channel}
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {CONF_CHANNEL: "already_configured"}
+
+
+@pytest.mark.usefixtures("mock_becker")
+async def test_subentry_add_existing_unit_one_spelled_out(
+    hass: HomeAssistant,
+) -> None:
+    """A stored "1:3" blocks a new bare "3"."""
+    entry = MockConfigEntry(
+        title="Becker (ttyUSB0)",
+        domain=DOMAIN,
+        data={CONF_DEVICE: "/dev/ttyUSB0", CONF_FILENAME: "centronic-stick.db"},
+        unique_id="/dev/ttyUSB0",
+        subentries_data=[
+            {
+                "subentry_type": SUBENTRY_TYPE_COVER,
+                "title": "Bedroom",
+                "unique_id": "1:3",
+                "data": {CONF_CHANNEL: "1:3", "friendly_name": "Bedroom"},
+            }
+        ],
+    )
+    await setup_integration(hass, entry)
+
+    result = await hass.config_entries.subentries.async_init(
+        (entry.entry_id, SUBENTRY_TYPE_COVER), context={"source": SOURCE_USER}
+    )
+    result = await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {CONF_CHANNEL: "3"}
+    )
+    assert result["errors"] == {CONF_CHANNEL: "already_configured"}
+
+
+@pytest.mark.usefixtures("mock_becker")
+async def test_subentry_add_same_channel_other_unit_allowed(
+    hass: HomeAssistant, mock_config_entry_with_cover: MockConfigEntry
+) -> None:
+    """Channel 1 on unit 2 is a different receiver than channel 1 on unit 1."""
+    await setup_integration(hass, mock_config_entry_with_cover)
+
+    result = await hass.config_entries.subentries.async_init(
+        (mock_config_entry_with_cover.entry_id, SUBENTRY_TYPE_COVER),
+        context={"source": SOURCE_USER},
+    )
+    result = await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {CONF_CHANNEL: "2:1"}
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "pair"

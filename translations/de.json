@@ -138,7 +138,7 @@
       "error": {
         "invalid_channel": "Der Kanal muss 1-7 oder Einheit:Kanal sein (zum Beispiel 2:1).",
         "invalid_remote_id": "Die Fernbedienungs-ID muss das Format ID:Kanal haben (zum Beispiel 12345:2).",
-        "already_configured": "Eine Abdeckung mit diesem Kanal ist bereits eingerichtet."
+        "already_configured": "Eine Abdeckung auf diesem Kanal ist bereits eingerichtet. Ein Kanal ohne Unit nutzt Unit 1, daher sind 1 und 1:1 derselbe Kanal."
       },
       "abort": {
         "reconfigure_successful": "Abdeckung aktualisiert."
