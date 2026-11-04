@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.3.0...v1.3.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* never suggest a channel a removed cover's motor may still answer to ([9c65032](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/9c65032fb710ebfc4e9ed182c8841736b1c88745))
+
 ## [1.3.0](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.2.2...v1.3.0) (2026-11-04)
 
 
