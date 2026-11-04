@@ -128,9 +128,10 @@ Physical Becker remotes talk to the cover directly, so Home Assistant only knows
 2. Tick **Learn a remote now** and submit.
 3. Within 45 seconds, press **STOP ■ twice** on the remote, about 2 seconds apart.
    - STOP is the button with the square symbol **■**. On most Becker hand-held remotes it sits between ▲ and ▼, but look for the symbol rather than the position. STOP doesn't start the cover moving.
-   - On a multi-channel remote, first select the cover's channel. The all-channels setting is ignored.
+   - **Remote with several channels?** First select the channel you normally use on that remote to move this cover: the one where ▲ moves this cover. This is the remote's own channel and has nothing to do with the **Channel** number you entered in Home Assistant (that one belongs to the USB stick). Don't use the setting that moves all covers at once; it is ignored.
+   - Remote with a single channel: nothing to select.
    - If your remote has no STOP button, press ▲ twice instead, about 2 seconds apart. The cover will move.
-4. Home Assistant shows what it heard, for example **■ STOP, ■ STOP from remote 1737B, channel 2**. You don't need to know the ID: check that the buttons match what you just pressed. Then choose:
+4. Home Assistant shows what it heard, for example **■ STOP, ■ STOP from remote 1737B, remote channel 2**. You don't need to know the ID: check that the buttons match what you just pressed. Then choose:
    - **Link this remote** to add it. From then on, presses on that remote update the cover's position in Home Assistant.
    - **Listen again** if the buttons don't match, for example because someone else used a remote at the same time.
    - **Save settings without linking** to keep your other changes only.
