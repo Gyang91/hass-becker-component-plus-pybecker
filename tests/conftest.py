@@ -14,7 +14,7 @@ import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.const import CONF_DEVICE, CONF_FILENAME
 from homeassistant.core import HomeAssistant
@@ -80,7 +80,7 @@ def hass_config_dir(hass_tmp_config_dir: str) -> str:
     """Use a per-test config dir instead of the shared package one.
 
     Without this, files written under hass.config.config_dir (e.g. the
-    import-flow backup files) land in pytest_homeassistant_custom_component's
+    import-flow backup files) land in pytest_homeassistant's
     static testing_config directory and leak across test runs.
     """
     return hass_tmp_config_dir
