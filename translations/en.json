@@ -126,7 +126,7 @@
             "remote_id": "Optional hand-held remote IDs to follow, formatted as ID:channel (for example 12345:2). Separate multiple remotes with commas.",
             "travelling_time_down": "Seconds the cover needs to travel from open to closed. Enables position control.",
             "travelling_time_up": "Seconds the cover needs to travel from closed to open. Enables position control.",
-            "learn_remote": "After you submit, the integration listens for 30 seconds. Press STOP on the Becker remote this cover should follow. STOP avoids moving the cover."
+            "learn_remote": "After you submit, press STOP ■ twice on the Becker remote this cover should follow. STOP doesn't start the cover moving."
           }
         },
         "pair": {
@@ -137,15 +137,37 @@
           }
         },
         "learn_remote_confirm": {
-          "title": "Remote found",
-          "description": "Heard remote {remote_id}. Submit to add it to this cover. Presses on that remote will then update the cover's position."
+          "title": "Is this your remote?",
+          "description": "Heard **{buttons}** from one remote (ID {remote_id}, channel {remote_channel}).\n\nIf these are the buttons you just pressed, link it. If not (for example someone else pressed a remote at the same time), listen again.",
+          "menu_options": {
+            "learn_remote_link": "Link this remote",
+            "learn_remote": "Listen again",
+            "save_without_remote": "Save settings without linking"
+          }
         },
         "learn_remote_failed": {
           "title": "No remote heard",
-          "description": "No remote was heard within {seconds} seconds. Make sure the remote is in range of the Centronic stick and press STOP again.",
+          "description": "No remote was pressed twice within {seconds} seconds. Check that the remote is in range of the Centronic stick, then press STOP ■ twice, about 2 seconds apart.",
           "menu_options": {
             "learn_remote": "Listen again",
             "save_without_remote": "Save settings without a remote"
+          }
+        },
+        "learn_remote_confirm_linked": {
+          "title": "Is this your remote?",
+          "description": "Heard **{buttons}** from one remote (ID {remote_id}, channel {remote_channel}).\n\nIf these are the buttons you just pressed, link it. If not (for example someone else pressed a remote at the same time), listen again.\n\n**Note:** this remote is already linked to **{covers}**. That's fine if one remote channel controls several covers. If you expected a different remote, listen again.",
+          "menu_options": {
+            "learn_remote_link": "Link this remote",
+            "learn_remote": "Listen again",
+            "save_without_remote": "Save settings without linking"
+          }
+        },
+        "learn_remote_known": {
+          "title": "Remote already linked",
+          "description": "Heard **{buttons}** from remote {remote_id}, channel {remote_channel}. This remote is already linked to this cover, so there is nothing to add.",
+          "menu_options": {
+            "save_without_remote": "Save settings",
+            "learn_remote": "Listen for another remote"
           }
         }
       },
@@ -159,7 +181,7 @@
         "reconfigure_successful": "Cover updated."
       },
       "progress": {
-        "learn_remote": "Press STOP on the Becker remote this cover should follow. Waiting up to {seconds} seconds…"
+        "learn_remote": "Press **STOP ■ twice** on the Becker remote, about 2 seconds apart.\n\nSTOP is the button with the square symbol ■. On most Becker hand-held remotes it sits between ▲ and ▼. STOP doesn't start the cover moving.\n\nOn a multi-channel remote, first select the cover's channel. The all-channels setting is ignored.\n\nNo STOP button? Press ▲ twice instead, about 2 seconds apart. The cover will move.\n\nListening for up to {seconds} seconds…"
       }
     }
   },

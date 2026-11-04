@@ -4,6 +4,7 @@ import asyncio
 import logging
 import os
 import shutil
+import time
 from contextlib import asynccontextmanager
 from datetime import timedelta
 from pathlib import Path
@@ -49,6 +50,7 @@ from homeassistant.helpers.selector import (
 from homeassistant.util import dt as dt_util
 
 from . import signal_for_entry
+from .event import decode_event_type
 from .const import (
     BACKUP_PREFIX,
     CHANNEL_PATTERN,
@@ -84,6 +86,8 @@ from .const import (
     DOWNLOAD_LINK_TTL_MINUTES,
     DOWNLOAD_URL,
     INTERMEDIATE_POSITION,
+    LEARN_REMOTE_PRESS_GAP,
+    LEARN_REMOTE_PRESSES,
     LEARN_REMOTE_TIMEOUT,
     REMOTE_ID,
     SUBENTRY_TYPE_COVER,
@@ -171,6 +175,57 @@ def _add_remote_id(remote_ids: str | None, remote_id: str) -> str:
     if remote_id.upper() in (part.upper() for part in known):
         return ", ".join(known)
     return ", ".join([*known, remote_id])
+
+
+# How a heard button is shown to the user. Symbols match the remote's keys.
+BUTTON_LABELS = {
+    "halt": "■ STOP",
+    "up": "▲ UP",
+    "down": "▼ DOWN",
+    "up_intermediate": "▲▲ UP (intermediate)",
+    "down_intermediate": "▼▼ DOWN (intermediate)",
+}
+
+
+def _remote_ids(remote_ids: str | None) -> set[str]:
+    """Return the normalised ID:channel entries of a remote id setting."""
+    return {
+        f"{match['id']}:{match['ch']}"
+        for match in REMOTE_ID.finditer((remote_ids or "").upper())
+    }
+
+
+class _PressCounter:
+    """Count separate button presses per remote from received packets.
+
+    A remote sends a button packet (possibly repeated while held) and a
+    RELEASE packet when the button is let go. A packet starts a new press
+    if the remote's previous press was released, or if nothing was heard
+    from that remote for LEARN_REMOTE_PRESS_GAP seconds (a missed release).
+    """
+
+    def __init__(self) -> None:
+        self._presses: dict[str, list[str]] = {}
+        self._last_packet: dict[str, float] = {}
+        self._released: set[str] = set()
+
+    def add(self, remote_id: str, button: str, now: float) -> list[str]:
+        """Record one packet; return the buttons pressed so far on that remote."""
+        last = self._last_packet.get(remote_id)
+        self._last_packet[remote_id] = now
+        presses = self._presses.setdefault(remote_id, [])
+        if button == "release":
+            self._released.add(remote_id)
+            return presses
+        if (
+            not presses
+            or remote_id in self._released
+            or last is None
+            or now - last >= LEARN_REMOTE_PRESS_GAP
+        ):
+            presses.append(BUTTON_LABELS.get(button, button))
+            self._released.discard(remote_id)
+        return presses
 
 
 def _channel_key(channel: str) -> tuple[int, int]:
@@ -514,8 +569,9 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
     def __init__(self) -> None:
         """Init the cover subentry flow."""
         self._cover_input: dict[str, Any] = {}
-        self._learn_task: asyncio.Task[str | None] | None = None
+        self._learn_task: asyncio.Task[tuple[str, list[str]] | None] | None = None
         self._learned_remote = ""
+        self._heard_buttons: list[str] = []
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -616,9 +672,9 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
     async def async_step_learn_remote(
         self, user_input: dict[str, Any] | None = None
     ) -> SubentryFlowResult:
-        """Listen for a button press on a physical Becker remote.
+        """Listen for presses on a physical Becker remote.
 
-        Only listens: nothing is sent, so no cover moves because of this step.
+        Only listens: nothing is sent, so the integration moves no cover.
         """
         if self._learn_task is None:
             self._learn_task = self.hass.async_create_task(
@@ -631,16 +687,26 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
                 progress_task=self._learn_task,
                 description_placeholders={"seconds": str(LEARN_REMOTE_TIMEOUT)},
             )
-        remote_id = self._learn_task.result()
+        heard = self._learn_task.result()
         self._learn_task = None
-        if remote_id is None:
+        if heard is None:
             return self.async_show_progress_done(next_step_id="learn_remote_failed")
-        self._learned_remote = remote_id
+        self._learned_remote, self._heard_buttons = heard
+        if self._learned_remote in _remote_ids(self._cover_input.get(CONF_REMOTE_ID)):
+            return self.async_show_progress_done(next_step_id="learn_remote_known")
+        if self._covers_linked_to(self._learned_remote):
+            return self.async_show_progress_done(
+                next_step_id="learn_remote_confirm_linked"
+            )
         return self.async_show_progress_done(next_step_id="learn_remote_confirm")
 
-    async def _async_wait_for_remote(self) -> str | None:
-        """Return the id (unit:channel) of the first remote heard, or None."""
-        heard: asyncio.Future[str] = self.hass.loop.create_future()
+    async def _async_wait_for_remote(self) -> tuple[str, list[str]] | None:
+        """Wait until one remote was pressed twice.
+
+        Returns its id (unit:channel) and the buttons heard, or None on timeout.
+        """
+        heard: asyncio.Future[tuple[str, list[str]]] = self.hass.loop.create_future()
+        counter = _PressCounter()
 
         @callback
         def _packet_received(packet) -> None:
@@ -648,10 +714,14 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
                 return
             channel = packet.group("channel").decode().upper()
             # "F" is the all-channels button of a multi-channel remote;
-            # wait for a press on the cover's own channel instead.
+            # wait for presses on the cover's own channel instead.
             if channel == "F":
                 return
-            heard.set_result(f"{packet.group('unit_id').decode().upper()}:{channel}")
+            remote_id = f"{packet.group('unit_id').decode().upper()}:{channel}"
+            button = decode_event_type(packet.group("command"), packet.group("argument"))
+            presses = counter.add(remote_id, button, time.monotonic())
+            if len(presses) >= LEARN_REMOTE_PRESSES:
+                heard.set_result((remote_id, list(presses)))
 
         unsubscribe = async_dispatcher_connect(
             self.hass, signal_for_entry(self._get_entry().entry_id), _packet_received
@@ -664,19 +734,65 @@ class CoverSubentryFlowHandler(ConfigSubentryFlow):
         finally:
             unsubscribe()
 
+    def _covers_linked_to(self, remote_id: str) -> list[str]:
+        """Return the names of the other covers already following this remote."""
+        own_id = self._get_reconfigure_subentry().subentry_id
+        return [
+            subentry.title
+            for subentry in self._get_entry().subentries.values()
+            if subentry.subentry_type == SUBENTRY_TYPE_COVER
+            and subentry.subentry_id != own_id
+            and remote_id in _remote_ids(subentry.data.get(CONF_REMOTE_ID))
+        ]
+
+    def _heard_placeholders(self) -> dict[str, str]:
+        """Describe what was heard in terms the user recognises."""
+        unit_id, _, channel = self._learned_remote.partition(":")
+        return {
+            "buttons": ", ".join(self._heard_buttons),
+            "remote_id": unit_id,
+            "remote_channel": channel,
+            "covers": ", ".join(self._covers_linked_to(self._learned_remote)),
+        }
+
     async def async_step_learn_remote_confirm(
         self, user_input: dict[str, Any] | None = None
     ) -> SubentryFlowResult:
-        """Add the remote that was heard to the cover."""
-        if user_input is not None:
-            self._cover_input[CONF_REMOTE_ID] = _add_remote_id(
-                self._cover_input.get(CONF_REMOTE_ID), self._learned_remote
-            )
-            return self._async_save_reconfigure(self._cover_input)
-        return self.async_show_form(
+        """Show what was heard and let the user link it or try again."""
+        return self.async_show_menu(
             step_id="learn_remote_confirm",
-            description_placeholders={CONF_REMOTE_ID: self._learned_remote},
+            menu_options=["learn_remote_link", "learn_remote", "save_without_remote"],
+            description_placeholders=self._heard_placeholders(),
         )
+
+    async def async_step_learn_remote_confirm_linked(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Like confirm, but warn that other covers already follow this remote."""
+        return self.async_show_menu(
+            step_id="learn_remote_confirm_linked",
+            menu_options=["learn_remote_link", "learn_remote", "save_without_remote"],
+            description_placeholders=self._heard_placeholders(),
+        )
+
+    async def async_step_learn_remote_known(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """The remote heard is already linked to this cover."""
+        return self.async_show_menu(
+            step_id="learn_remote_known",
+            menu_options=["save_without_remote", "learn_remote"],
+            description_placeholders=self._heard_placeholders(),
+        )
+
+    async def async_step_learn_remote_link(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Add the remote that was heard to the cover and save."""
+        self._cover_input[CONF_REMOTE_ID] = _add_remote_id(
+            self._cover_input.get(CONF_REMOTE_ID), self._learned_remote
+        )
+        return self._async_save_reconfigure(self._cover_input)
 
     async def async_step_learn_remote_failed(
         self, user_input: dict[str, Any] | None = None

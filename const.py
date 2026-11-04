@@ -39,8 +39,13 @@ CONF_ENTRY_ID = "entry_id"
 CONF_UPLOAD = "upload"
 CONF_STATE_TEXT = "state_text"
 CONF_LEARN_REMOTE = "learn_remote"
-# Seconds the cover reconfigure flow listens for a remote button press
-LEARN_REMOTE_TIMEOUT = 30
+# Seconds the cover reconfigure flow listens for the remote's presses
+LEARN_REMOTE_TIMEOUT = 45
+# Presses needed from the same remote before it is offered for linking
+LEARN_REMOTE_PRESSES = 2
+# Packets from one remote closer together than this (without a release in
+# between) are repeats of one held button, not a new press
+LEARN_REMOTE_PRESS_GAP = 1.0
 
 # Import/export
 DOWNLOAD_URL = "/api/becker/download/{entry_id}/{fmt}"

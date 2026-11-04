@@ -126,7 +126,7 @@
             "remote_id": "Optionale IDs physischer Fernbedienungen im Format ID:Kanal (zum Beispiel 12345:2). Mehrere Fernbedienungen mit Kommas trennen.",
             "travelling_time_down": "Sekunden für die Fahrt von offen nach geschlossen. Aktiviert die Positionssteuerung.",
             "travelling_time_up": "Sekunden für die Fahrt von geschlossen nach offen. Aktiviert die Positionssteuerung.",
-            "learn_remote": "Nach dem Absenden wartet die Integration 30 Sekunden. Drücke STOPP auf der Becker-Fernbedienung, der diese Abdeckung folgen soll. STOPP bewegt die Abdeckung nicht."
+            "learn_remote": "Drücke nach dem Absenden zweimal STOPP ■ auf der Becker-Fernbedienung, der diese Abdeckung folgen soll. STOPP setzt die Abdeckung nicht in Bewegung."
           }
         },
         "pair": {
@@ -137,15 +137,37 @@
           }
         },
         "learn_remote_confirm": {
-          "title": "Fernbedienung gefunden",
-          "description": "Fernbedienung {remote_id} empfangen. Absenden, um sie zu dieser Abdeckung hinzuzufügen. Tastendrücke auf dieser Fernbedienung aktualisieren dann die Position der Abdeckung."
+          "title": "Ist das deine Fernbedienung?",
+          "description": "Empfangen: **{buttons}** von einer Fernbedienung (ID {remote_id}, Kanal {remote_channel}).\n\nWenn das die Tasten sind, die du gerade gedrückt hast, verknüpfe sie. Wenn nicht (zum Beispiel hat gleichzeitig jemand anderes eine Fernbedienung benutzt), lausche erneut.",
+          "menu_options": {
+            "learn_remote_link": "Diese Fernbedienung verknüpfen",
+            "learn_remote": "Erneut lauschen",
+            "save_without_remote": "Einstellungen ohne Verknüpfung speichern"
+          }
         },
         "learn_remote_failed": {
           "title": "Keine Fernbedienung empfangen",
-          "description": "Innerhalb von {seconds} Sekunden wurde keine Fernbedienung empfangen. Prüfe, ob die Fernbedienung in Reichweite des Centronic-Sticks ist, und drücke erneut STOPP.",
+          "description": "Innerhalb von {seconds} Sekunden wurde keine Fernbedienung zweimal gedrückt. Prüfe, ob die Fernbedienung in Reichweite des Centronic-Sticks ist, und drücke dann zweimal STOPP ■ im Abstand von etwa 2 Sekunden.",
           "menu_options": {
             "learn_remote": "Erneut lauschen",
             "save_without_remote": "Einstellungen ohne Fernbedienung speichern"
+          }
+        },
+        "learn_remote_confirm_linked": {
+          "title": "Ist das deine Fernbedienung?",
+          "description": "Empfangen: **{buttons}** von einer Fernbedienung (ID {remote_id}, Kanal {remote_channel}).\n\nWenn das die Tasten sind, die du gerade gedrückt hast, verknüpfe sie. Wenn nicht (zum Beispiel hat gleichzeitig jemand anderes eine Fernbedienung benutzt), lausche erneut.\n\n**Hinweis:** Diese Fernbedienung ist bereits mit **{covers}** verknüpft. Das ist in Ordnung, wenn ein Kanal mehrere Abdeckungen steuert. Wenn du eine andere Fernbedienung erwartet hast, lausche erneut.",
+          "menu_options": {
+            "learn_remote_link": "Diese Fernbedienung verknüpfen",
+            "learn_remote": "Erneut lauschen",
+            "save_without_remote": "Einstellungen ohne Verknüpfung speichern"
+          }
+        },
+        "learn_remote_known": {
+          "title": "Fernbedienung bereits verknüpft",
+          "description": "Empfangen: **{buttons}** von Fernbedienung {remote_id}, Kanal {remote_channel}. Diese Fernbedienung ist bereits mit dieser Abdeckung verknüpft, es gibt nichts hinzuzufügen.",
+          "menu_options": {
+            "save_without_remote": "Einstellungen speichern",
+            "learn_remote": "Auf eine andere Fernbedienung lauschen"
           }
         }
       },
@@ -159,7 +181,7 @@
         "reconfigure_successful": "Abdeckung aktualisiert."
       },
       "progress": {
-        "learn_remote": "Drücke STOPP auf der Becker-Fernbedienung, der diese Abdeckung folgen soll. Warte bis zu {seconds} Sekunden…"
+        "learn_remote": "Drücke **zweimal STOPP ■** auf der Becker-Fernbedienung, im Abstand von etwa 2 Sekunden.\n\nSTOPP ist die Taste mit dem Quadrat-Symbol ■. Bei den meisten Becker-Handsendern liegt sie zwischen ▲ und ▼. STOPP setzt die Abdeckung nicht in Bewegung.\n\nBei einem Mehrkanal-Handsender wähle zuerst den Kanal der Abdeckung. Die Einstellung „alle Kanäle“ wird ignoriert.\n\nKeine STOPP-Taste? Drücke stattdessen zweimal ▲, im Abstand von etwa 2 Sekunden. Die Abdeckung fährt dann.\n\nWarte bis zu {seconds} Sekunden…"
       }
     }
   },

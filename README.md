@@ -120,10 +120,18 @@ Physical Becker remotes talk to the cover directly, so Home Assistant only knows
 
 1. Open **Settings → Devices & services → Becker**, find the cover and choose **Reconfigure**.
 2. Tick **Learn a remote now** and submit.
-3. Within 30 seconds, press **STOP** on the remote. STOP doesn't move the cover.
-4. Confirm the remote that was heard. It is added to the cover's remote IDs, and presses on that remote then update the cover's position in Home Assistant.
+3. Within 45 seconds, press **STOP ■ twice** on the remote, about 2 seconds apart.
+   - STOP is the button with the square symbol **■**. On most Becker hand-held remotes it sits between ▲ and ▼, but look for the symbol rather than the position. STOP doesn't start the cover moving.
+   - On a multi-channel remote, first select the cover's channel. The all-channels setting is ignored.
+   - If your remote has no STOP button, press ▲ twice instead, about 2 seconds apart. The cover will move.
+4. Home Assistant shows what it heard, for example **■ STOP, ■ STOP from remote 1737B, channel 2**. You don't need to know the ID: check that the buttons match what you just pressed. Then choose:
+   - **Link this remote** to add it. From then on, presses on that remote update the cover's position in Home Assistant.
+   - **Listen again** if the buttons don't match, for example because someone else used a remote at the same time.
+   - **Save settings without linking** to keep your other changes only.
 
-Learning only listens: the integration sends nothing while it waits. If no remote is heard, you can listen again or save your other changes without a remote. The all-channels button of a multi-channel remote is ignored, so press a button on the cover's own channel.
+Two presses from the same remote are needed, so a single stray press from another remote is never picked up. If the remote is already linked to another cover, Home Assistant names that cover. That's fine when one remote channel controls several covers. If the remote is already linked to this cover, nothing is added.
+
+Learning only listens: the integration sends nothing while it waits. If no remote is heard, you can listen again or save your other changes without a remote.
 
 ## Known limitations
 
