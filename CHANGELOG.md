@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.1](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.2.0...v1.2.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* make learning a remote understandable without knowing its ID ([25a1902](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/25a1902b2df035c4344e7d2be6d1d21375228814))
+
+
+### Documentation
+
+* put the badges first, in one consistent style ([e3fcadf](https://github.com/Gyang91/hass-becker-component-plus-pybecker/commit/e3fcadf804caeb136abf560bb708074d567ecb9f))
+
 ## [1.2.0](https://github.com/Gyang91/hass-becker-component-plus-pybecker/compare/v1.1.0...v1.2.0) (2026-11-04)
 
 
