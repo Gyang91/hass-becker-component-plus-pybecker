@@ -209,7 +209,7 @@ Imports are rejected if they would move a counter backwards or mark a configured
 
 ## Limitations
 
-- No position feedback from Becker receivers: position is estimated (travel time) unless a position template is set.
+- Becker receivers never report their position (one-way RF). Home Assistant estimates it from the travel time. For real feedback, use a [Position template](#position-template) fed by another sensor, e.g. a window contact.
 - Rolling-code counters live in Home Assistant; restoring older state can desynchronize a receiver.
 - No automatic USB discovery; the serial port is chosen during setup.
 - Pairing needs the receiver in learn mode (master remote).
